@@ -5,4 +5,8 @@ import App from './App.vue'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 
-createApp(App).use(Antd).mount('#app')
+import AxiosUtil from "./utils/api/axiosUtil.js";
+import Router from './routers'
+
+
+createApp(App).use(Antd).use(AxiosUtil).use(Router).mount('#app')
