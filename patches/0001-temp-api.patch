@@ -1,0 +1,3817 @@
+From c5a588454b7b99146e7afa7abfc8f706f65f7bbb Mon Sep 17 00:00:00 2001
+From: amao <86212616+maomao11223@users.noreply.github.com>
+Date: Tue, 8 Apr 2025 16:43:52 +0800
+Subject: [PATCH 1/4] =?UTF-8?q?[temp]=20=E5=88=97=E5=87=BA=E6=89=80?=
+ =?UTF-8?q?=E6=9C=89api=E5=92=8C=E7=B5=B1=E4=B8=80=E7=AE=A1=E7=90=86?=
+ =?UTF-8?q?=E5=9B=9E=E5=82=B3=E5=80=BC?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .gitignore                                    |   3 +
+ README.md                                     |  15 +
+ pom.xml                                       |  15 +-
+ ...Application.java => StockApplication.java} |   8 +-
+ .../controller/NewsArticleController.java     |  39 +++
+ .../controller/NewsSentimentController.java   |  25 ++
+ .../demo/controller/OrderController.java      |  72 -----
+ .../controller/PricePredictionController.java |  27 ++
+ .../demo/controller/ProductController.java    | 118 --------
+ .../demo/controller/StockController.java      |  64 +++++
+ .../demo/controller/StockPriceController.java |  28 ++
+ .../demo/controller/UserController.java       |  47 +--
+ .../demo/controller/WatchlistController.java  |  34 +++
+ .../java/com/example/demo/dao/OrderDao.java   |  16 --
+ .../java/com/example/demo/dao/ProductDao.java |  23 --
+ .../java/com/example/demo/dao/UserDao.java    |  16 --
+ .../example/demo/dao/impl/OrderDaoImpl.java   | 165 -----------
+ .../example/demo/dao/impl/ProductDaoImpl.java | 170 -----------
+ .../example/demo/dao/impl/UserDaoImpl.java    |  82 ------
+ .../java/com/example/demo/dto/BuyItem.java    |  29 --
+ .../demo/dto/CreateNewsArticleRequest.java    |  16 ++
+ .../example/demo/dto/CreateOrderRequest.java  |  19 --
+ .../example/demo/dto/OrderQueryParams.java    |  31 --
+ .../example/demo/dto/ProductQueryParams.java  |  60 ----
+ .../com/example/demo/dto/ProductRequest.java  |  68 -----
+ .../example/demo/dto/UserLoginRequest.java    |  29 --
+ .../example/demo/dto/UserRegisterRequest.java |  32 ---
+ .../com/example/demo/entity/NewsArticle.java  |  41 +++
+ .../example/demo/entity/NewsSentiment.java    |  40 +++
+ .../example/demo/entity/PricePrediction.java  |  46 +++
+ .../java/com/example/demo/entity/Stock.java   |  31 ++
+ .../com/example/demo/entity/StockPrice.java   |  45 +++
+ .../java/com/example/demo/entity/User.java    |  31 ++
+ .../com/example/demo/entity/Watchlist.java    |  30 ++
+ .../InternalServerErrorException.java         |  19 ++
+ .../demo/handler/GlobalExceptionHandler.java  |  46 +++
+ .../java/com/example/demo/model/Order.java    |  62 ----
+ .../com/example/demo/model/OrderItem.java     |  68 -----
+ .../java/com/example/demo/model/Product.java  |  89 ------
+ .../java/com/example/demo/model/User.java     |  56 ----
+ .../example/demo/model/common/ApiError.java   |  35 +++
+ .../demo/model/common/ApiRestResponse.java    |  33 +++
+ .../demo/model/common/RestApiException.java   |  24 ++
+ .../repository/PricePredictionRepository.java |  10 +
+ .../demo/repository/StockPriceRepository.java |  12 +
+ .../demo/repository/StockRepository.java      |  12 +
+ .../demo/repository/UserRepository.java       |  10 +
+ .../demo/repository/WatchlistRepository.java  |  10 +
+ .../demo/rowmapper/OrderItemRowMapper.java    |  23 --
+ .../demo/rowmapper/OrderRowMapper.java        |  24 --
+ .../demo/rowmapper/ProductRowMapper.java      |  34 ---
+ .../example/demo/rowmapper/UserRowMapper.java |  23 --
+ .../example/demo/service/OrderService.java    |  18 --
+ .../example/demo/service/ProductService.java  |  22 --
+ .../example/demo/service/StockService.java    |  10 +
+ .../com/example/demo/service/UserService.java |  14 -
+ .../demo/service/impl/OrderServiceImpl.java   | 125 --------
+ .../demo/service/impl/ProductServiceImpl.java |  48 ----
+ .../demo/service/impl/StockServiceImpl.java   |  24 ++
+ .../demo/service/impl/UserServiceImpl.java    |  72 -----
+ src/main/resources/application.properties     |  17 +-
+ ...nTests.java => StockApplicationTests.java} |   2 +-
+ .../demo/controller/OrderControllerTest.java  | 117 --------
+ .../controller/ProductControllerTest.java     | 271 ------------------
+ .../demo/controller/UserControllerTest.java   | 193 -------------
+ src/test/resources/data.sql                   |  71 ++++-
+ src/test/resources/schema.sql                 | 107 ++++---
+ 67 files changed, 936 insertions(+), 2280 deletions(-)
+ create mode 100644 README.md
+ rename src/main/java/com/example/demo/{EshopApplication.java => StockApplication.java} (54%)
+ create mode 100644 src/main/java/com/example/demo/controller/NewsArticleController.java
+ create mode 100644 src/main/java/com/example/demo/controller/NewsSentimentController.java
+ delete mode 100644 src/main/java/com/example/demo/controller/OrderController.java
+ create mode 100644 src/main/java/com/example/demo/controller/PricePredictionController.java
+ delete mode 100644 src/main/java/com/example/demo/controller/ProductController.java
+ create mode 100644 src/main/java/com/example/demo/controller/StockController.java
+ create mode 100644 src/main/java/com/example/demo/controller/StockPriceController.java
+ create mode 100644 src/main/java/com/example/demo/controller/WatchlistController.java
+ delete mode 100644 src/main/java/com/example/demo/dao/OrderDao.java
+ delete mode 100644 src/main/java/com/example/demo/dao/ProductDao.java
+ delete mode 100644 src/main/java/com/example/demo/dao/UserDao.java
+ delete mode 100644 src/main/java/com/example/demo/dao/impl/OrderDaoImpl.java
+ delete mode 100644 src/main/java/com/example/demo/dao/impl/ProductDaoImpl.java
+ delete mode 100644 src/main/java/com/example/demo/dao/impl/UserDaoImpl.java
+ delete mode 100644 src/main/java/com/example/demo/dto/BuyItem.java
+ create mode 100644 src/main/java/com/example/demo/dto/CreateNewsArticleRequest.java
+ delete mode 100644 src/main/java/com/example/demo/dto/CreateOrderRequest.java
+ delete mode 100644 src/main/java/com/example/demo/dto/OrderQueryParams.java
+ delete mode 100644 src/main/java/com/example/demo/dto/ProductQueryParams.java
+ delete mode 100644 src/main/java/com/example/demo/dto/ProductRequest.java
+ delete mode 100644 src/main/java/com/example/demo/dto/UserLoginRequest.java
+ delete mode 100644 src/main/java/com/example/demo/dto/UserRegisterRequest.java
+ create mode 100644 src/main/java/com/example/demo/entity/NewsArticle.java
+ create mode 100644 src/main/java/com/example/demo/entity/NewsSentiment.java
+ create mode 100644 src/main/java/com/example/demo/entity/PricePrediction.java
+ create mode 100644 src/main/java/com/example/demo/entity/Stock.java
+ create mode 100644 src/main/java/com/example/demo/entity/StockPrice.java
+ create mode 100644 src/main/java/com/example/demo/entity/User.java
+ create mode 100644 src/main/java/com/example/demo/entity/Watchlist.java
+ create mode 100644 src/main/java/com/example/demo/exception/InternalServerErrorException.java
+ create mode 100644 src/main/java/com/example/demo/handler/GlobalExceptionHandler.java
+ delete mode 100644 src/main/java/com/example/demo/model/Order.java
+ delete mode 100644 src/main/java/com/example/demo/model/OrderItem.java
+ delete mode 100644 src/main/java/com/example/demo/model/Product.java
+ delete mode 100644 src/main/java/com/example/demo/model/User.java
+ create mode 100644 src/main/java/com/example/demo/model/common/ApiError.java
+ create mode 100644 src/main/java/com/example/demo/model/common/ApiRestResponse.java
+ create mode 100644 src/main/java/com/example/demo/model/common/RestApiException.java
+ create mode 100644 src/main/java/com/example/demo/repository/PricePredictionRepository.java
+ create mode 100644 src/main/java/com/example/demo/repository/StockPriceRepository.java
+ create mode 100644 src/main/java/com/example/demo/repository/StockRepository.java
+ create mode 100644 src/main/java/com/example/demo/repository/UserRepository.java
+ create mode 100644 src/main/java/com/example/demo/repository/WatchlistRepository.java
+ delete mode 100644 src/main/java/com/example/demo/rowmapper/OrderItemRowMapper.java
+ delete mode 100644 src/main/java/com/example/demo/rowmapper/OrderRowMapper.java
+ delete mode 100644 src/main/java/com/example/demo/rowmapper/ProductRowMapper.java
+ delete mode 100644 src/main/java/com/example/demo/rowmapper/UserRowMapper.java
+ delete mode 100644 src/main/java/com/example/demo/service/OrderService.java
+ delete mode 100644 src/main/java/com/example/demo/service/ProductService.java
+ create mode 100644 src/main/java/com/example/demo/service/StockService.java
+ delete mode 100644 src/main/java/com/example/demo/service/UserService.java
+ delete mode 100644 src/main/java/com/example/demo/service/impl/OrderServiceImpl.java
+ delete mode 100644 src/main/java/com/example/demo/service/impl/ProductServiceImpl.java
+ create mode 100644 src/main/java/com/example/demo/service/impl/StockServiceImpl.java
+ delete mode 100644 src/main/java/com/example/demo/service/impl/UserServiceImpl.java
+ rename src/test/java/com/example/demo/{EshopApplicationTests.java => StockApplicationTests.java} (85%)
+ delete mode 100644 src/test/java/com/example/demo/controller/OrderControllerTest.java
+ delete mode 100644 src/test/java/com/example/demo/controller/ProductControllerTest.java
+ delete mode 100644 src/test/java/com/example/demo/controller/UserControllerTest.java
+
+diff --git a/.gitignore b/.gitignore
+index 549e00a..c1eb2d9 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -31,3 +31,6 @@ build/
+ 
+ ### VS Code ###
+ .vscode/
++
++### Mac ###
++*.DS_Store
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..f51e31c
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,15 @@
++## 🧠 各目錄用途說明
++
++| 目錄	          | 用途說明                                |
++|--------------|-------------------------------------|
++| config/	     | Swagger、CORS 設定、Spring Security 設定等 |
++| controller/	 | 對外提供 API，負責接收請求、回傳結果                |
++| dto/	        | 前後端傳輸資料專用物件，避免直接用 entity 暴露 DB 結構   |
++| entity/	     | 定義對應資料庫的 JPA Entity                 |
++| repository/	 | 使用 JPA 操作 DB，查詢、儲存資料                |
++| service/	    | 核心邏輯層，處理商業邏輯                        |
++| exception/	  | 統一處理例外，例如 NotFound、Validation 等     |
++| util/	       | 工具類別，如日期轉換、模型轉換器等                   |
++
++## swagger
++http://localhost:8080/swagger-ui/index.html#/
+\ No newline at end of file
+diff --git a/pom.xml b/pom.xml
+index bc80f92..6df1112 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -11,8 +11,8 @@
+     <groupId>com.example</groupId>
+     <artifactId>demo</artifactId>
+     <version>0.0.1-SNAPSHOT</version>
+-    <name>eshop</name>
+-    <description>Spring Boot eshop project</description>
++    <name>stock</name>
++    <description>Spring Boot stock project</description>
+     <url/>
+     <licenses>
+         <license/>
+@@ -77,6 +77,17 @@
+             <artifactId>h2</artifactId>
+             <scope>runtime</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.projectlombok</groupId>
++            <artifactId>lombok</artifactId>
++            <scope>provided</scope>
++        </dependency>
++        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
++        <dependency>
++            <groupId>org.springdoc</groupId>
++            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
++            <version>2.8.6</version>
++        </dependency>
+     </dependencies>
+ 
+     <build>
+diff --git a/src/main/java/com/example/demo/EshopApplication.java b/src/main/java/com/example/demo/StockApplication.java
+similarity index 54%
+rename from src/main/java/com/example/demo/EshopApplication.java
+rename to src/main/java/com/example/demo/StockApplication.java
+index 9052f76..6601d4f 100644
+--- a/src/main/java/com/example/demo/EshopApplication.java
++++ b/src/main/java/com/example/demo/StockApplication.java
+@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+ @SpringBootApplication
+-public class EshopApplication {
++public class StockApplication {
+ 
+-	public static void main(String[] args) {
+-		SpringApplication.run(EshopApplication.class, args);
+-	}
++    public static void main(String[] args) {
++        SpringApplication.run(StockApplication.class, args);
++    }
+ 
+ }
+diff --git a/src/main/java/com/example/demo/controller/NewsArticleController.java b/src/main/java/com/example/demo/controller/NewsArticleController.java
+new file mode 100644
+index 0000000..248c8f8
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/NewsArticleController.java
+@@ -0,0 +1,39 @@
++package com.example.demo.controller;
++
++import com.example.demo.dto.CreateNewsArticleRequest;
++import com.example.demo.entity.NewsArticle;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import java.util.List;
++
++
++@RestController
++@RequestMapping("/api/newsArticles")
++@RequiredArgsConstructor
++public class NewsArticleController {
++
++    @PostMapping("/{newsArticlesId}")
++    @Operation(summary = "新增新聞文章")
++    public String addNews(
++            @PathVariable Integer newsArticlesId,
++            @RequestBody CreateNewsArticleRequest createNewsArticleRequest) {
++        return "success";
++    }
++
++
++    @GetMapping
++    @Operation(summary = "查詢所有新聞（可加上條件如 stockId）")
++    public List<NewsArticle> getNewsByStockId(@PathVariable Integer stockId) {
++        return null;
++    }
++
++
++
++}
+diff --git a/src/main/java/com/example/demo/controller/NewsSentimentController.java b/src/main/java/com/example/demo/controller/NewsSentimentController.java
+new file mode 100644
+index 0000000..9408c70
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/NewsSentimentController.java
+@@ -0,0 +1,25 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.NewsSentiment;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++@RestController
++@RequestMapping("/api/newsSentiments")
++@RequiredArgsConstructor
++public class NewsSentimentController {
++    @PostMapping
++    @Operation(summary = "新增情緒分析結果（由 DeepSeek 分析後回傳）")
++    public NewsSentiment addSentiment(@RequestBody NewsSentiment sentiment) { return null; }
++
++    @GetMapping("/{newsArticleId}")
++    @Operation(summary = "查詢特定新聞的情緒分析結果")
++    public NewsSentiment getSentimentByNewsArticleId(@PathVariable Integer newsArticleId) { return null; }
++
++}
+diff --git a/src/main/java/com/example/demo/controller/OrderController.java b/src/main/java/com/example/demo/controller/OrderController.java
+deleted file mode 100644
+index 9b88888..0000000
+--- a/src/main/java/com/example/demo/controller/OrderController.java
++++ /dev/null
+@@ -1,72 +0,0 @@
+-package com.example.demo.controller;
+-
+-import com.example.demo.dto.CreateOrderRequest;
+-import com.example.demo.dto.OrderQueryParams;
+-import com.example.demo.model.Order;
+-import com.example.demo.service.OrderService;
+-import com.example.demo.util.Page;
+-import jakarta.validation.Valid;
+-import jakarta.validation.constraints.Max;
+-import jakarta.validation.constraints.Min;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.http.ResponseEntity;
+-import org.springframework.web.bind.annotation.GetMapping;
+-import org.springframework.web.bind.annotation.PathVariable;
+-import org.springframework.web.bind.annotation.PostMapping;
+-import org.springframework.web.bind.annotation.RequestBody;
+-import org.springframework.web.bind.annotation.RequestParam;
+-import org.springframework.web.bind.annotation.RestController;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-
+-@RestController
+-public class OrderController {
+-
+-    @Autowired
+-    private OrderService orderService;
+-
+-    @PostMapping("/users/{userId}/orders")
+-    public ResponseEntity<?> createOrder(@PathVariable Integer userId,
+-                                         @RequestBody @Valid CreateOrderRequest createOrderRequest){
+-      Integer orderId =  orderService.createOrder(userId,createOrderRequest);
+-
+-
+-        Order order = orderService.getOrderById(orderId);
+-
+-
+-      return ResponseEntity.status(HttpStatus.CREATED).body(order);
+-
+-    }
+-
+-    @GetMapping("/users/{userId}/orders")
+-    public ResponseEntity<Page<Order>> getOrders(
+-            @PathVariable Integer userId,
+-            @RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
+-            @RequestParam(defaultValue = "0") @Min(0) Integer offset
+-    ){
+-        OrderQueryParams orderQueryParams = new OrderQueryParams();
+-
+-        orderQueryParams.setUserId(userId);
+-        orderQueryParams.setLimit(limit);
+-        orderQueryParams.setOffset(offset);
+-
+-        // 取得 order list
+-        List<Order> orderList = orderService.getOrders(orderQueryParams);
+-
+-        // 取得 order 總數
+-        Integer total = orderService.countOrders(orderQueryParams);
+-        // 分頁
+-        Page<Order> page = new Page<>();
+-        page.setLimit(limit);
+-        page.setTotal(total);
+-        page.setOffset(offset);
+-        page.setResults(orderList);
+-
+-        return ResponseEntity.status(HttpStatus.OK).body(page);
+-
+-
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/controller/PricePredictionController.java b/src/main/java/com/example/demo/controller/PricePredictionController.java
+new file mode 100644
+index 0000000..06a953b
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/PricePredictionController.java
+@@ -0,0 +1,27 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.PricePrediction;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/pricePredictions")
++@RequiredArgsConstructor
++public class PricePredictionController {
++    @PostMapping
++    @Operation(summary = "新增預測資料（通常由 AI 模型產出）")
++    public PricePrediction addPricePredictions(@RequestBody PricePrediction prediction) { return null; }
++
++    @GetMapping("/{stockId}")
++    public List<PricePrediction> getPredictionsByStockId(@PathVariable Integer stockId) { return null; }
++
++
++}
+diff --git a/src/main/java/com/example/demo/controller/ProductController.java b/src/main/java/com/example/demo/controller/ProductController.java
+deleted file mode 100644
+index eb7a728..0000000
+--- a/src/main/java/com/example/demo/controller/ProductController.java
++++ /dev/null
+@@ -1,118 +0,0 @@
+-package com.example.demo.controller;
+-
+-import com.example.demo.constant.ProductCategory;
+-import com.example.demo.dto.ProductQueryParams;
+-import com.example.demo.dto.ProductRequest;
+-import com.example.demo.model.Product;
+-import com.example.demo.service.ProductService;
+-import com.example.demo.util.Page;
+-import jakarta.validation.Valid;
+-import jakarta.validation.constraints.Max;
+-import jakarta.validation.constraints.Min;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.http.ResponseEntity;
+-import org.springframework.validation.annotation.Validated;
+-import org.springframework.web.bind.annotation.DeleteMapping;
+-import org.springframework.web.bind.annotation.GetMapping;
+-import org.springframework.web.bind.annotation.PathVariable;
+-import org.springframework.web.bind.annotation.PostMapping;
+-import org.springframework.web.bind.annotation.PutMapping;
+-import org.springframework.web.bind.annotation.RequestBody;
+-import org.springframework.web.bind.annotation.RequestParam;
+-import org.springframework.web.bind.annotation.RestController;
+-
+-import java.util.List;
+-
+-@Validated
+-@RestController
+-public class ProductController {
+-    @Autowired
+-    private ProductService productService;
+-
+-    @GetMapping("/products")
+-    public ResponseEntity<Page<Product>> getProducts(
+-            // 查詢條件 Filtering
+-            @RequestParam(required = false) ProductCategory category,
+-            @RequestParam(required = false) String search,
+-
+-            // 排序 Sorting
+-            @RequestParam(defaultValue = "created_date") String orderBy,
+-            @RequestParam(defaultValue = "desc") String sortBy,
+-
+-            // 分頁 Pagination
+-            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
+-            @RequestParam(defaultValue = "0") @Min(0) Integer offset
+-    ) {
+-        ProductQueryParams productQueryParams = new ProductQueryParams();
+-        productQueryParams.setCategory(category);
+-        productQueryParams.setSearch(search);
+-        productQueryParams.setOrderBy(orderBy);
+-        productQueryParams.setSortBy(sortBy);
+-        productQueryParams.setLimit(limit);
+-        productQueryParams.setOffset(offset);
+-
+-        // 取得 product List
+-        List<Product> productList = productService.getProducts(productQueryParams);
+-
+-        // 取得 product 總數
+-        Integer total = productService.countProduct(productQueryParams);
+-
+-        // 分頁
+-        Page<Product> page = new Page<>();
+-        page.setLimit(limit);
+-        page.setOffset(offset);
+-        page.setTotal(total);
+-        page.setResults(productList);
+-
+-
+-        return ResponseEntity.status(HttpStatus.OK).body(page);
+-    }
+-
+-    @GetMapping("/products/{productId}")
+-    public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
+-        Product product = productService.getProductById(productId);
+-
+-        if (product != null) {
+-            return ResponseEntity.status(HttpStatus.OK).body(product);
+-        } else {
+-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+-        }
+-    }
+-
+-    @PostMapping("/products")
+-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
+-        Integer productId = productService.createProduct(productRequest);
+-
+-        Product product = productService.getProductById(productId);
+-
+-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+-    }
+-
+-    @PutMapping("/products/{productId}")
+-    public ResponseEntity<Product> updateProduct(
+-            @PathVariable Integer productId,
+-            @RequestBody @Valid ProductRequest productRequest
+-    ) {
+-        // 先檢查productId是否存在
+-        Product product = productService.getProductById(productId);
+-
+-        if (product == null) {
+-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+-        }
+-
+-        // 修改商品數據
+-        productService.updateProduct(productId, productRequest);
+-        // 重新查詢修改後的商品資料
+-        Product updatedProduct = productService.getProductById(productId);
+-
+-        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+-    }
+-
+-    @DeleteMapping("/products/{productId}")
+-    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId) {
+-        productService.deleteProductById(productId);
+-
+-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/controller/StockController.java b/src/main/java/com/example/demo/controller/StockController.java
+new file mode 100644
+index 0000000..4b48ad8
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/StockController.java
+@@ -0,0 +1,64 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.Stock;
++import com.example.demo.model.common.ApiRestResponse;
++import com.example.demo.model.common.RestApiException;
++import com.example.demo.service.StockService;
++import com.example.demo.util.Page;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.web.bind.annotation.DeleteMapping;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/stocks")
++@RequiredArgsConstructor
++public class StockController {
++
++    @Autowired
++    private StockService stockService;
++
++    @GetMapping
++    @Operation(summary = "取得所有Stock")
++    public ApiRestResponse<Page<Stock>> getAllStocks() {
++
++
++        List<Stock> stockList = stockService.getAllStocks();
++
++        System.out.println("controller: " + stockList);
++
++        Page<Stock> page = new Page<>();
++        page.setLimit(0);
++        page.setTotal(100);
++        page.setOffset(0);
++        page.setResults(stockList);
++
++        return ApiRestResponse.success(page);
++    }
++
++    @GetMapping("/{symbol}")
++    @Operation(summary = "根據symbol查詢特定股票")
++    public String getStockBySymbol(@PathVariable String symbol) {
++        return "success" + symbol;
++    }
++
++    @PostMapping
++    @Operation(summary = "新增股票資料")
++    public void addStock() {
++    }
++
++    @DeleteMapping("/{symbol}")
++    @Operation(summary = "刪除特定股票")
++    public String deleteStock(@PathVariable String symbol) {
++        return symbol;
++    }
++
++
++}
+diff --git a/src/main/java/com/example/demo/controller/StockPriceController.java b/src/main/java/com/example/demo/controller/StockPriceController.java
+new file mode 100644
+index 0000000..a563cbb
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/StockPriceController.java
+@@ -0,0 +1,28 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.StockPrice;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import java.util.List;
++
++
++@RestController
++@RequestMapping("/api/stockPrices")
++@RequiredArgsConstructor
++public class StockPriceController {
++    @GetMapping("/{stockId}")
++    @Operation(summary = "根據股票 symbol 查詢歷史價格（由資料庫 inner join 查詢）")
++    public List<StockPrice> getStockPrices(@PathVariable Long stockId) { return null; }
++
++    @PostMapping
++    @Operation(summary = "新增每日價格資料")
++    public StockPrice addStockPrice(@RequestBody StockPrice stockPrice) { return null; }
++
++}
+diff --git a/src/main/java/com/example/demo/controller/UserController.java b/src/main/java/com/example/demo/controller/UserController.java
+index 85e8608..0b6daed 100644
+--- a/src/main/java/com/example/demo/controller/UserController.java
++++ b/src/main/java/com/example/demo/controller/UserController.java
+@@ -1,43 +1,26 @@
+ package com.example.demo.controller;
+ 
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.example.demo.model.User;
+-import com.example.demo.service.UserService;
+-import jakarta.validation.Valid;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.http.ResponseEntity;
+-import org.springframework.validation.annotation.Validated;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.GetMapping;
+ import org.springframework.web.bind.annotation.PostMapping;
+-import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
+ import org.springframework.web.bind.annotation.RestController;
+ 
+-
+-@Validated
+ @RestController
++@RequestMapping("/api/users")
++@RequiredArgsConstructor
+ public class UserController {
+ 
+-    @Autowired
+-    private UserService userService;
+-
+-
+-    @PostMapping("/users/register")
+-    public ResponseEntity<User> register(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+-
+-        Integer userId = userService.register(userRegisterRequest);
+-
+-        User user = userService.getUserById(userId);
+-
+-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+-
+-    }
+-
+-    @PostMapping("/users/login")
+-    public ResponseEntity<User> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
++    @PostMapping("/register")
++    @Operation(summary = "註冊")
++    public void register(){}
+ 
+-        User user = userService.login(userLoginRequest);
++    @PostMapping("/login")
++    @Operation(summary = "登入")
++    public void login(){}
+ 
+-        return ResponseEntity.status(HttpStatus.OK).body(user);
+-    }
++    @GetMapping("/{userId}")
++    @Operation(summary = "取得登入者資料")
++    public void getUserDetail(){}
+ }
+diff --git a/src/main/java/com/example/demo/controller/WatchlistController.java b/src/main/java/com/example/demo/controller/WatchlistController.java
+new file mode 100644
+index 0000000..acc46a3
+--- /dev/null
++++ b/src/main/java/com/example/demo/controller/WatchlistController.java
+@@ -0,0 +1,34 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.Stock;
++import com.example.demo.entity.Watchlist;
++import io.swagger.v3.oas.annotations.Operation;
++import lombok.RequiredArgsConstructor;
++import org.springframework.web.bind.annotation.DeleteMapping;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/watchLists")
++@RequiredArgsConstructor
++public class WatchlistController {
++
++    @PostMapping
++    @Operation(summary = "新增一筆追蹤紀錄（user_id + stock_id）")
++    public Watchlist addWatch(@RequestBody Watchlist watchlist) { return null; }
++
++    @DeleteMapping("/{watchlistId}")
++    @Operation(summary = "移除一筆追蹤紀錄")
++    public void deleteWatch(@PathVariable Long watchlistId) { return ; }
++
++    @GetMapping("/{userId}")
++    @Operation(summary = "查詢使用者的追蹤股票清單")
++    public List<Stock> getUserWatchlist(@PathVariable Long userId) { return null; }
++
++}
+diff --git a/src/main/java/com/example/demo/dao/OrderDao.java b/src/main/java/com/example/demo/dao/OrderDao.java
+deleted file mode 100644
+index 7b2721f..0000000
+--- a/src/main/java/com/example/demo/dao/OrderDao.java
++++ /dev/null
+@@ -1,16 +0,0 @@
+-package com.example.demo.dao;
+-
+-import com.example.demo.dto.OrderQueryParams;
+-import com.example.demo.model.Order;
+-import com.example.demo.model.OrderItem;
+-
+-import java.util.List;
+-
+-public interface OrderDao {
+-    Integer createOrder(Integer userId,Integer totalAmount);
+-    void createOrderItems(Integer orderId, List<OrderItem> orderItemList);
+-    Order getOrderById(Integer orderId);
+-    List<OrderItem> getOrderItemsByOrderId(Integer orderId);
+-    List<Order> getOrders(OrderQueryParams orderQueryParams);
+-    Integer countOrder(OrderQueryParams orderQueryParams);
+-}
+diff --git a/src/main/java/com/example/demo/dao/ProductDao.java b/src/main/java/com/example/demo/dao/ProductDao.java
+deleted file mode 100644
+index 0a4b5af..0000000
+--- a/src/main/java/com/example/demo/dao/ProductDao.java
++++ /dev/null
+@@ -1,23 +0,0 @@
+-package com.example.demo.dao;
+-
+-import com.example.demo.dto.ProductQueryParams;
+-import com.example.demo.dto.ProductRequest;
+-import com.example.demo.model.Product;
+-
+-import java.util.List;
+-
+-public interface ProductDao {
+-    Product getProductById(Integer productId);
+-
+-    Integer createProduct(ProductRequest productRequest);
+-
+-    void updateProduct(Integer productId, ProductRequest productRequest);
+-
+-    void deleteProductById(Integer productId);
+-
+-    List<Product> getProducts(ProductQueryParams productQueryParams);
+-
+-    Integer countProduct(ProductQueryParams productQueryParams);
+-
+-    void updateStock(Integer productId,Integer stock);
+-}
+diff --git a/src/main/java/com/example/demo/dao/UserDao.java b/src/main/java/com/example/demo/dao/UserDao.java
+deleted file mode 100644
+index 1bae344..0000000
+--- a/src/main/java/com/example/demo/dao/UserDao.java
++++ /dev/null
+@@ -1,16 +0,0 @@
+-package com.example.demo.dao;
+-
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.example.demo.model.User;
+-
+-public interface UserDao {
+-
+-
+-    Integer createUser(UserRegisterRequest userRegisterRequest);
+-
+-    User getUserById(Integer userId);
+-
+-    User getUserByEmail(String email);
+-
+-}
+diff --git a/src/main/java/com/example/demo/dao/impl/OrderDaoImpl.java b/src/main/java/com/example/demo/dao/impl/OrderDaoImpl.java
+deleted file mode 100644
+index 660dfc2..0000000
+--- a/src/main/java/com/example/demo/dao/impl/OrderDaoImpl.java
++++ /dev/null
+@@ -1,165 +0,0 @@
+-package com.example.demo.dao.impl;
+-
+-import com.example.demo.dao.OrderDao;
+-import com.example.demo.dto.OrderQueryParams;
+-import com.example.demo.model.Order;
+-import com.example.demo.model.OrderItem;
+-import com.example.demo.model.Product;
+-import com.example.demo.rowmapper.OrderItemRowMapper;
+-import com.example.demo.rowmapper.OrderRowMapper;
+-import com.example.demo.rowmapper.ProductRowMapper;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+-import org.springframework.jdbc.support.GeneratedKeyHolder;
+-import org.springframework.jdbc.support.KeyHolder;
+-import org.springframework.stereotype.Component;
+-
+-import java.util.Date;
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
+-
+-@Component
+-public class OrderDaoImpl implements OrderDao {
+-
+-    @Autowired
+-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+-
+-    @Override
+-    public Integer createOrder(Integer userId, Integer totalAmount) {
+-
+-        String sql = "INSERT INTO orders (user_id, total_amount, created_date, last_modified_date) VALUES (:userId, :totalAmount, :createdDate, :lastModifiedDate)";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("userId", userId);
+-        map.put("totalAmount", totalAmount);
+-
+-        Date now = new Date();
+-        map.put("createdDate", now);
+-        map.put("lastModifiedDate", now);
+-
+-        KeyHolder keyHolder = new GeneratedKeyHolder();
+-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+-
+-        int orderId = keyHolder.getKey().intValue();
+-
+-        return orderId;
+-    }
+-
+-    @Override
+-    public void createOrderItems(Integer orderId, List<OrderItem> orderItemList) {
+-        // 方法1: 使用 for loop 一條一條 sql 加入數據，效率較低
+-//        for (OrderItem orderItem : orderItemList) {
+-//            String sql = "INSERT INTO order_item (order_id, product_id, quantity, amount) " +
+-//                    "VALUES (:orderId, :productId, :quantity, :amount)";
+-//
+-//            Map<String, Object> map = new HashMap<>();
+-//            map.put("orderId", orderId);
+-//            map.put("productId", orderItem.getProductId());
+-//            map.put("quantity", orderItem.getQuantity());
+-//            map.put("amount", orderItem.getAmount());
+-//
+-//            namedParameterJdbcTemplate.update(sql, map);
+-//        }
+-
+-//        =============== 分割線 ====================
+-
+-
+-        // 方法2: 使用 batchUpdate 一次性加入數據，效率更高
+-        String sql = "INSERT INTO order_item (order_id, product_id, quantity, amount) " +
+-                "VALUES (:orderId, :productId, :quantity, :amount)";
+-
+-        MapSqlParameterSource[] parameterSources = new MapSqlParameterSource[orderItemList.size()];
+-
+-        for (int i = 0; i < orderItemList.size(); i++) {
+-            OrderItem orderItem = orderItemList.get(i);
+-
+-            parameterSources[i] = new MapSqlParameterSource();
+-            parameterSources[i].addValue("orderId", orderId);
+-            parameterSources[i].addValue("productId", orderItem.getProductId());
+-            parameterSources[i].addValue("quantity", orderItem.getQuantity());
+-            parameterSources[i].addValue("amount", orderItem.getAmount());
+-
+-        }
+-        namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+-
+-    }
+-
+-    @Override
+-    public Order getOrderById(Integer orderId) {
+-        String sql = "SELECT order_id, user_id, total_amount, created_date, last_modified_date FROM orders " +
+-                "WHERE order_id = :orderId ";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("orderId", orderId);
+-
+-        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+-
+-        if (orderList.size() > 0) {
+-            return orderList.get(0);
+-        } else {
+-            return null;
+-        }
+-    }
+-
+-    @Override
+-    public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
+-
+-        String sql = "SELECT oi.order_item_id, oi.order_id, oi.product_id, oi.quantity, oi.amount, p.product_name, p.image_url " +
+-                "FROM order_item as oi " +
+-                "LEFT JOIN product as p ON oi.product_id = p.product_id " +
+-                "WHERE oi.order_id = :orderId";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("orderId", orderId);
+-
+-        List<OrderItem> orderItemList = namedParameterJdbcTemplate.query(sql, map, new OrderItemRowMapper());
+-
+-        return orderItemList;
+-    }
+-
+-    @Override
+-    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+-        String sql = "SELECT order_id,user_id, total_amount, created_date, last_modified_date " +
+-                "FROM orders WHERE 1= 1 ";
+-
+-        Map<String, Object> map = new HashMap<>();
+-
+-        sql = addFilteringSql(sql, map, orderQueryParams);
+-
+-        // 排序
+-        sql = sql + " ORDER BY created_date DESC";
+-
+-        // 分頁
+-        sql = sql + " LIMIT :limit OFFSET :offset";
+-        map.put("limit", orderQueryParams.getLimit());
+-        map.put("offset", orderQueryParams.getOffset());
+-
+-        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+-
+-        return orderList;
+-    }
+-
+-    @Override
+-    public Integer countOrder(OrderQueryParams orderQueryParams) {
+-        String sql = "SELECT count(*) FROM orders WHERE 1=1";
+-
+-        Map<String, Object> map = new HashMap<>();
+-
+-        sql = addFilteringSql(sql, map, orderQueryParams);
+-
+-        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+-
+-        return total;
+-    }
+-
+-    // 查詢條件
+-    private String addFilteringSql(String sql, Map<String, Object> map, OrderQueryParams orderQueryParams) {
+-        if (orderQueryParams.getUserId() != null) {
+-            sql = sql + " AND user_id = :userId";
+-            map.put("userId", orderQueryParams.getUserId());
+-        }
+-        return sql;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dao/impl/ProductDaoImpl.java b/src/main/java/com/example/demo/dao/impl/ProductDaoImpl.java
+deleted file mode 100644
+index 1fafc5c..0000000
+--- a/src/main/java/com/example/demo/dao/impl/ProductDaoImpl.java
++++ /dev/null
+@@ -1,170 +0,0 @@
+-package com.example.demo.dao.impl;
+-
+-import com.example.demo.dao.ProductDao;
+-import com.example.demo.dto.ProductQueryParams;
+-import com.example.demo.dto.ProductRequest;
+-import com.example.demo.model.Product;
+-import com.example.demo.rowmapper.ProductRowMapper;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+-import org.springframework.jdbc.support.GeneratedKeyHolder;
+-import org.springframework.jdbc.support.KeyHolder;
+-import org.springframework.stereotype.Component;
+-
+-import java.util.Date;
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
+-
+-@Component
+-public class ProductDaoImpl implements ProductDao {
+-
+-    @Autowired
+-    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+-
+-    @Override
+-    public Integer countProduct(ProductQueryParams productQueryParams) {
+-        String sql = "SELECT count(*) FROM product WHERE 1=1";
+-
+-        Map<String, Object> map = new HashMap<>();
+-
+-        // 查詢條件
+-        sql = addFilteringSql(sql, map, productQueryParams);
+-
+-        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+-
+-        return total;
+-    }
+-
+-    @Override
+-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+-        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
+-                "FROM product WHERE 1=1";
+-
+-        Map<String, Object> map = new HashMap<>();
+-
+-        // 查詢條件
+-        sql = addFilteringSql(sql, map, productQueryParams);
+-
+-        // 排序 orderBy 只能用字串拼接的方式，不能用傳入變數的方式！
+-        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSortBy();
+-
+-        // 分頁
+-        sql = sql + " LIMIT :limit OFFSET :offset";
+-        map.put("limit", productQueryParams.getLimit());
+-        map.put("offset", productQueryParams.getOffset());
+-
+-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+-
+-        return productList;
+-    }
+-
+-    @Override
+-    public Product getProductById(Integer productId) {
+-        String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
+-                "FROM product WHERE product_id = :productId";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("productId", productId);
+-
+-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+-
+-        if (productList.size() > 0) {
+-            return productList.get(0);
+-        } else {
+-
+-            return null;
+-        }
+-
+-    }
+-
+-    @Override
+-    public Integer createProduct(ProductRequest productRequest) {
+-        String sql = "INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) " +
+-                "VALUES (:productName,:category , :image_url, :price, :stock, :description, :createdDate, :lastModifiedDate)";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("productName", productRequest.getProductName());
+-        map.put("category", productRequest.getCategory().toString());
+-        map.put("image_url", productRequest.getImageUrl());
+-        map.put("price", productRequest.getPrice());
+-        map.put("stock", productRequest.getStock());
+-        map.put("description", productRequest.getDescription());
+-
+-        Date now = new Date();
+-        map.put("createdDate", now);
+-        map.put("lastModifiedDate", now);
+-
+-        KeyHolder keyHolder = new GeneratedKeyHolder();
+-
+-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+-
+-        int productId = keyHolder.getKey().intValue();
+-
+-        return productId;
+-    }
+-
+-    @Override
+-    public void updateProduct(Integer productId, ProductRequest productRequest) {
+-        String sql = "UPDATE product SET product_name = :productName, category = :category, " +
+-                "image_url = :image_url, price = :price, stock = :stock, description = :description, " +
+-                "last_modified_date = :lastModifiedDate WHERE product_id = :productId";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("productId", productId);
+-        map.put("productName", productRequest.getProductName());
+-        map.put("category", productRequest.getCategory().toString());
+-        map.put("image_url", productRequest.getImageUrl());
+-        map.put("price", productRequest.getPrice());
+-        map.put("stock", productRequest.getStock());
+-        map.put("description", productRequest.getDescription());
+-
+-        Date now = new Date();
+-        map.put("lastModifiedDate", now);
+-
+-        namedParameterJdbcTemplate.update(sql, map);
+-
+-
+-    }
+-
+-    @Override
+-    public void deleteProductById(Integer productId) {
+-
+-        String sql = "DELETE FROM product WHERE product_id = :productId";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("productId", productId);
+-
+-        namedParameterJdbcTemplate.update(sql, map);
+-
+-    }
+-
+-    // 查詢條件
+-    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
+-        if (productQueryParams.getCategory() != null) {
+-            sql = sql + " AND category = :category";
+-            map.put("category", productQueryParams.getCategory().name());
+-        }
+-        if (productQueryParams.getSearch() != null) {
+-            sql = sql + " AND product_name LIKE :search";
+-            map.put("search", "%" + productQueryParams.getSearch() + "%");
+-        }
+-
+-        return sql;
+-    }
+-
+-    @Override
+-    public void updateStock(Integer productId, Integer stock) {
+-        String sql = "UPDATE product SET stock = :stock, last_modified_date = :lastModifiedDate " +
+-                "WHERE product_id = :productId";
+-
+-        Map<String,Object> map = new HashMap<>();
+-        map.put("stock",stock);
+-        map.put("productId",productId);
+-        map.put("lastModifiedDate",new Date());
+-
+-        namedParameterJdbcTemplate.update(sql,map);
+-
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dao/impl/UserDaoImpl.java b/src/main/java/com/example/demo/dao/impl/UserDaoImpl.java
+deleted file mode 100644
+index 1ae469f..0000000
+--- a/src/main/java/com/example/demo/dao/impl/UserDaoImpl.java
++++ /dev/null
+@@ -1,82 +0,0 @@
+-package com.example.demo.dao.impl;
+-
+-import com.example.demo.dao.UserDao;
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.example.demo.model.User;
+-import com.example.demo.rowmapper.UserRowMapper;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+-import org.springframework.jdbc.support.GeneratedKeyHolder;
+-import org.springframework.jdbc.support.KeyHolder;
+-import org.springframework.stereotype.Component;
+-
+-import java.util.Date;
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
+-
+-@Component
+-public class UserDaoImpl implements UserDao {
+-
+-    @Autowired
+-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+-
+-    @Override
+-    public Integer createUser(UserRegisterRequest userRegisterRequest) {
+-        String sql = "INSERT INTO users(email, password, created_date, last_modified_date) " +
+-                "VALUES (:email, :password, :createdDate, :lastModifiedDate)";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("email", userRegisterRequest.getEmail());
+-        map.put("password", userRegisterRequest.getPassword());
+-
+-        Date now = new Date();
+-        map.put("createdDate", now);
+-        map.put("lastModifiedDate", now);
+-
+-        KeyHolder keyHolder = new GeneratedKeyHolder();
+-
+-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+-
+-        int userId = keyHolder.getKey().intValue();
+-        return userId;
+-    }
+-
+-    @Override
+-    public User getUserById(Integer userId) {
+-
+-        String sql = "SELECT user_id, email, password, created_date, last_modified_date " +
+-                "FROM users WHERE user_id = :userId";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("userId", userId);
+-
+-        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+-
+-        if (userList.size()>0){
+-            return userList.get(0);
+-        }else{
+-            return null;
+-        }
+-    }
+-
+-    @Override
+-    public User getUserByEmail(String email) {
+-
+-        String sql = "SELECT user_id, email, password, created_date, last_modified_date " +
+-                "FROM users WHERE email = :email";
+-
+-        Map<String, Object> map = new HashMap<>();
+-        map.put("email", email);
+-
+-        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+-
+-        if (userList.size()>0){
+-            return userList.get(0);
+-        }else{
+-            return null;
+-        }
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dto/BuyItem.java b/src/main/java/com/example/demo/dto/BuyItem.java
+deleted file mode 100644
+index 992cd8f..0000000
+--- a/src/main/java/com/example/demo/dto/BuyItem.java
++++ /dev/null
+@@ -1,29 +0,0 @@
+-package com.example.demo.dto;
+-
+-import jakarta.validation.constraints.NotNull;
+-
+-public class BuyItem {
+-    @NotNull
+-    private Integer productId;
+-
+-    @NotNull
+-    private Integer quantity;
+-
+-    public Integer getQuantity() {
+-        return quantity;
+-    }
+-
+-    public void setQuantity(Integer quantity) {
+-        this.quantity = quantity;
+-    }
+-
+-    public Integer getProductId() {
+-        return productId;
+-    }
+-
+-    public void setProductId(Integer productId) {
+-        this.productId = productId;
+-    }
+-
+-
+-}
+diff --git a/src/main/java/com/example/demo/dto/CreateNewsArticleRequest.java b/src/main/java/com/example/demo/dto/CreateNewsArticleRequest.java
+new file mode 100644
+index 0000000..48c83f1
+--- /dev/null
++++ b/src/main/java/com/example/demo/dto/CreateNewsArticleRequest.java
+@@ -0,0 +1,16 @@
++package com.example.demo.dto;
++
++import lombok.Data;
++
++import java.util.Date;
++
++@Data
++public class CreateNewsArticleRequest {
++    private Integer stockId;
++    private String title;
++    private String content;
++    private String source;
++    private String url;
++    private Date publishedAt;
++
++}
+diff --git a/src/main/java/com/example/demo/dto/CreateOrderRequest.java b/src/main/java/com/example/demo/dto/CreateOrderRequest.java
+deleted file mode 100644
+index f927fed..0000000
+--- a/src/main/java/com/example/demo/dto/CreateOrderRequest.java
++++ /dev/null
+@@ -1,19 +0,0 @@
+-package com.example.demo.dto;
+-
+-import jakarta.validation.constraints.NotEmpty;
+-
+-import java.util.List;
+-
+-public class CreateOrderRequest {
+-    @NotEmpty
+-    private List<BuyItem> buyItemList;
+-
+-    public List<BuyItem> getBuyItemList() {
+-        return buyItemList;
+-    }
+-
+-    public void setBuyItemList(List<BuyItem> buyItemList) {
+-        this.buyItemList = buyItemList;
+-    }
+-
+-}
+diff --git a/src/main/java/com/example/demo/dto/OrderQueryParams.java b/src/main/java/com/example/demo/dto/OrderQueryParams.java
+deleted file mode 100644
+index ef559d1..0000000
+--- a/src/main/java/com/example/demo/dto/OrderQueryParams.java
++++ /dev/null
+@@ -1,31 +0,0 @@
+-package com.example.demo.dto;
+-
+-public class OrderQueryParams {
+-    private Integer userId;
+-    private Integer limit;
+-    private Integer offset;
+-
+-    public Integer getUserId() {
+-        return userId;
+-    }
+-
+-    public void setUserId(Integer userId) {
+-        this.userId = userId;
+-    }
+-
+-    public Integer getLimit() {
+-        return limit;
+-    }
+-
+-    public void setLimit(Integer limit) {
+-        this.limit = limit;
+-    }
+-
+-    public Integer getOffset() {
+-        return offset;
+-    }
+-
+-    public void setOffset(Integer offset) {
+-        this.offset = offset;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dto/ProductQueryParams.java b/src/main/java/com/example/demo/dto/ProductQueryParams.java
+deleted file mode 100644
+index 7653d47..0000000
+--- a/src/main/java/com/example/demo/dto/ProductQueryParams.java
++++ /dev/null
+@@ -1,60 +0,0 @@
+-package com.example.demo.dto;
+-
+-import com.example.demo.constant.ProductCategory;
+-
+-public class ProductQueryParams {
+-    private ProductCategory category;
+-    private String search;
+-    private String orderBy;
+-    private String sortBy;
+-    private Integer limit;
+-    private Integer offset;
+-
+-    public Integer getLimit() {
+-        return limit;
+-    }
+-
+-    public void setLimit(Integer limit) {
+-        this.limit = limit;
+-    }
+-
+-    public Integer getOffset() {
+-        return offset;
+-    }
+-
+-    public void setOffset(Integer offset) {
+-        this.offset = offset;
+-    }
+-
+-    public String getOrderBy() {
+-        return orderBy;
+-    }
+-
+-    public void setOrderBy(String orderBy) {
+-        this.orderBy = orderBy;
+-    }
+-
+-    public String getSortBy() {
+-        return sortBy;
+-    }
+-
+-    public void setSortBy(String sortBy) {
+-        this.sortBy = sortBy;
+-    }
+-
+-    public ProductCategory getCategory() {
+-        return category;
+-    }
+-
+-    public void setCategory(ProductCategory category) {
+-        this.category = category;
+-    }
+-
+-    public String getSearch() {
+-        return search;
+-    }
+-
+-    public void setSearch(String search) {
+-        this.search = search;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dto/ProductRequest.java b/src/main/java/com/example/demo/dto/ProductRequest.java
+deleted file mode 100644
+index 4e0dc29..0000000
+--- a/src/main/java/com/example/demo/dto/ProductRequest.java
++++ /dev/null
+@@ -1,68 +0,0 @@
+-package com.example.demo.dto;
+-
+-import com.example.demo.constant.ProductCategory;
+-import jakarta.validation.constraints.NotNull;
+-
+-
+-public class ProductRequest {
+-
+-    @NotNull
+-    private String productName;
+-    @NotNull
+-    private ProductCategory category;
+-    @NotNull
+-    private String imageUrl;
+-    @NotNull
+-    private Integer price;
+-    @NotNull
+-    private Integer stock;
+-    private String description;
+-
+-    public String getProductName() {
+-        return productName;
+-    }
+-
+-    public void setProductName(String productName) {
+-        this.productName = productName;
+-    }
+-
+-    public ProductCategory getCategory() {
+-        return category;
+-    }
+-
+-    public void setCategory(ProductCategory category) {
+-        this.category = category;
+-    }
+-
+-    public String getImageUrl() {
+-        return imageUrl;
+-    }
+-
+-    public void setImageUrl(String imageUrl) {
+-        this.imageUrl = imageUrl;
+-    }
+-
+-    public Integer getPrice() {
+-        return price;
+-    }
+-
+-    public void setPrice(Integer price) {
+-        this.price = price;
+-    }
+-
+-    public Integer getStock() {
+-        return stock;
+-    }
+-
+-    public void setStock(Integer stock) {
+-        this.stock = stock;
+-    }
+-
+-    public String getDescription() {
+-        return description;
+-    }
+-
+-    public void setDescription(String description) {
+-        this.description = description;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dto/UserLoginRequest.java b/src/main/java/com/example/demo/dto/UserLoginRequest.java
+deleted file mode 100644
+index 4ea05ab..0000000
+--- a/src/main/java/com/example/demo/dto/UserLoginRequest.java
++++ /dev/null
+@@ -1,29 +0,0 @@
+-package com.example.demo.dto;
+-
+-import jakarta.validation.constraints.Email;
+-import jakarta.validation.constraints.NotBlank;
+-
+-public class UserLoginRequest {
+-    @NotBlank
+-    @Email
+-    private String email;
+-
+-    @NotBlank
+-    private String password;
+-
+-    public String getEmail() {
+-        return email;
+-    }
+-
+-    public void setEmail(String email) {
+-        this.email = email;
+-    }
+-
+-    public String getPassword() {
+-        return password;
+-    }
+-
+-    public void setPassword(String password) {
+-        this.password = password;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/dto/UserRegisterRequest.java b/src/main/java/com/example/demo/dto/UserRegisterRequest.java
+deleted file mode 100644
+index 371004d..0000000
+--- a/src/main/java/com/example/demo/dto/UserRegisterRequest.java
++++ /dev/null
+@@ -1,32 +0,0 @@
+-package com.example.demo.dto;
+-
+-
+-import jakarta.validation.constraints.Email;
+-import jakarta.validation.constraints.NotBlank;
+-
+-public class UserRegisterRequest {
+-
+-    @NotBlank(message="email不可為空")
+-    @Email
+-    private String email;
+-
+-    @NotBlank
+-    private String password;
+-
+-    public String getPassword() {
+-        return password;
+-    }
+-
+-    public void setPassword(String password) {
+-        this.password = password;
+-    }
+-
+-    public String getEmail() {
+-        return email;
+-    }
+-
+-    public void setEmail(String email) {
+-        this.email = email;
+-    }
+-
+-}
+diff --git a/src/main/java/com/example/demo/entity/NewsArticle.java b/src/main/java/com/example/demo/entity/NewsArticle.java
+new file mode 100644
+index 0000000..b8c0907
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/NewsArticle.java
+@@ -0,0 +1,41 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.JoinColumn;
++import jakarta.persistence.Lob;
++import jakarta.persistence.ManyToOne;
++import jakarta.persistence.Table;
++import lombok.Data;
++
++import java.util.Date;
++@Data
++@Entity
++@Table(name = "news_articles")
++public class NewsArticle {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer newsArticleId;
++
++    @ManyToOne
++    @JoinColumn(name = "stock_id")
++    private Stock stock;
++
++    private String title;
++
++    @Lob
++    private String content;
++
++    private String source;
++
++    private String url;
++
++    @Column(name = "published_at")
++    private Date publishedAt;
++
++    @Column(name = "created_date")
++    private Date createdDate;
++}
+diff --git a/src/main/java/com/example/demo/entity/NewsSentiment.java b/src/main/java/com/example/demo/entity/NewsSentiment.java
+new file mode 100644
+index 0000000..b6b0ed0
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/NewsSentiment.java
+@@ -0,0 +1,40 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.JoinColumn;
++import jakarta.persistence.Lob;
++import jakarta.persistence.OneToOne;
++import jakarta.persistence.Table;
++import lombok.Data;
++
++import java.math.BigDecimal;
++import java.util.Date;
++
++@Data
++@Entity
++@Table(name = "news_sentiments")
++public class NewsSentiment {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer newsSentimentsId;
++
++    @OneToOne
++    @JoinColumn(name = "news_article_id")
++    private NewsArticle newsArticle;
++
++    @Column(name = "sentiment_score")
++    private BigDecimal sentimentScore;
++
++    @Lob
++    private String summary;
++
++    @Lob
++    private String keywords;
++
++    @Column(name = "created_date")
++    private Date createdDate;
++}
+diff --git a/src/main/java/com/example/demo/entity/PricePrediction.java b/src/main/java/com/example/demo/entity/PricePrediction.java
+new file mode 100644
+index 0000000..e28841d
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/PricePrediction.java
+@@ -0,0 +1,46 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.JoinColumn;
++import jakarta.persistence.ManyToOne;
++import jakarta.persistence.Table;
++import jakarta.persistence.UniqueConstraint;
++import lombok.Data;
++
++import java.math.BigDecimal;
++import java.util.Date;
++@Data
++@Entity
++@Table(name = "price_predictions", uniqueConstraints = {
++        @UniqueConstraint(columnNames = {"stock_id", "prediction_date"})
++})
++public class PricePrediction {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @ManyToOne
++    @JoinColumn(name = "stock_id")
++    private Stock stock;
++
++    @Column(name = "prediction_date")
++    private Date predictionDate;
++
++    @Column(name = "predicted_range_low")
++    private BigDecimal predictedRangeLow;
++
++    @Column(name = "predicted_range_high")
++    private BigDecimal predictedRangeHigh;
++
++    private BigDecimal confidence;
++
++    @Column(name = "source_model")
++    private String sourceModel;
++
++    @Column(name = "created_date")
++    private Date createdDate;
++}
+diff --git a/src/main/java/com/example/demo/entity/Stock.java b/src/main/java/com/example/demo/entity/Stock.java
+new file mode 100644
+index 0000000..e230b89
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/Stock.java
+@@ -0,0 +1,31 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.Table;
++import lombok.Data;
++
++import java.util.Date;
++@Data
++@Entity
++@Table(name = "stocks")
++public class Stock {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer stockId;
++
++    private String symbol;
++
++    @Column(name = "name")
++    private String stockName;
++
++    private String market;
++
++    private String industry;
++
++    private Date createdDate;
++
++}
+diff --git a/src/main/java/com/example/demo/entity/StockPrice.java b/src/main/java/com/example/demo/entity/StockPrice.java
+new file mode 100644
+index 0000000..2055c30
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/StockPrice.java
+@@ -0,0 +1,45 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.JoinColumn;
++import jakarta.persistence.ManyToOne;
++import jakarta.persistence.Table;
++import jakarta.persistence.UniqueConstraint;
++import lombok.Data;
++
++import java.math.BigDecimal;
++import java.util.Date;
++@Data
++@Entity
++@Table(name = "stock_prices", uniqueConstraints = {
++        @UniqueConstraint(columnNames = {"stock_id", "date"})
++})
++public class StockPrice {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer stockPriceId;
++
++    @ManyToOne
++    @JoinColumn(name = "stock_id")
++    private Stock stock;
++
++    private Date tradeDate;
++
++    @Column(name = "open_price")
++    private BigDecimal openPrice;
++
++    @Column(name = "close_price")
++    private BigDecimal closePrice;
++
++    @Column(name = "high_price")
++    private BigDecimal highPrice;
++
++    @Column(name="low_price")
++    private BigDecimal lowPrice;
++
++    private Long volume;
++}
+diff --git a/src/main/java/com/example/demo/entity/User.java b/src/main/java/com/example/demo/entity/User.java
+new file mode 100644
+index 0000000..21b6066
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/User.java
+@@ -0,0 +1,31 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.CascadeType;
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.OneToMany;
++import jakarta.persistence.Table;
++import lombok.Data;
++
++import java.util.Date;
++import java.util.List;
++@Data
++@Entity
++@Table(name = "users")
++public class User {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer userId;
++
++    private String email;
++
++    private String password;
++
++    private Date createdDate;
++
++    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
++    private List<Watchlist> watchlist;
++}
+diff --git a/src/main/java/com/example/demo/entity/Watchlist.java b/src/main/java/com/example/demo/entity/Watchlist.java
+new file mode 100644
+index 0000000..8d6c6f4
+--- /dev/null
++++ b/src/main/java/com/example/demo/entity/Watchlist.java
+@@ -0,0 +1,30 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.Entity;
++import jakarta.persistence.GeneratedValue;
++import jakarta.persistence.GenerationType;
++import jakarta.persistence.Id;
++import jakarta.persistence.JoinColumn;
++import jakarta.persistence.ManyToOne;
++import jakarta.persistence.Table;
++import lombok.Data;
++
++import java.util.Date;
++@Data
++@Entity
++@Table(name = "watchlist")
++public class Watchlist {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Integer watchlistId;
++
++    @ManyToOne
++    @JoinColumn(name="user_id")
++    private User user;
++
++    @ManyToOne
++    @JoinColumn(name="stock_id")
++    private Stock stock;
++
++    private Date createdDate;
++}
+diff --git a/src/main/java/com/example/demo/exception/InternalServerErrorException.java b/src/main/java/com/example/demo/exception/InternalServerErrorException.java
+new file mode 100644
+index 0000000..5e20ec4
+--- /dev/null
++++ b/src/main/java/com/example/demo/exception/InternalServerErrorException.java
+@@ -0,0 +1,19 @@
++package com.example.demo.exception;
++
++import com.example.demo.model.common.RestApiException;
++import org.springframework.http.HttpStatus;
++
++/**
++ * 系統內部錯誤用的自訂例外
++ */
++public class InternalServerErrorException extends RestApiException {
++
++    public InternalServerErrorException(String message) {
++        super("5000", message, HttpStatus.INTERNAL_SERVER_ERROR);
++    }
++
++    public InternalServerErrorException(String message, Throwable cause) {
++        super("5000", message, HttpStatus.INTERNAL_SERVER_ERROR);
++        this.initCause(cause);
++    }
++}
+diff --git a/src/main/java/com/example/demo/handler/GlobalExceptionHandler.java b/src/main/java/com/example/demo/handler/GlobalExceptionHandler.java
+new file mode 100644
+index 0000000..51a098a
+--- /dev/null
++++ b/src/main/java/com/example/demo/handler/GlobalExceptionHandler.java
+@@ -0,0 +1,46 @@
++package com.example.demo.handler;
++
++
++import com.example.demo.model.common.ApiRestResponse;
++import com.example.demo.model.common.RestApiException;
++import lombok.extern.slf4j.Slf4j;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.ExceptionHandler;
++import org.springframework.web.bind.annotation.ControllerAdvice;
++
++@Slf4j
++@ControllerAdvice
++public class GlobalExceptionHandler {
++
++    // 處理 RestApiException
++    @ExceptionHandler(RestApiException.class)
++    public ResponseEntity<ApiRestResponse<?>> handleRestApiException(RestApiException ex) {
++        log.error("RestApiException 被攔截: {}", ex.getMessage());
++
++        ApiRestResponse<?> response = ApiRestResponse.failure(
++                ex.getApiErrorCode(),
++                ex.getMessage(),
++                ex.getMessage()
++        );
++
++        return ResponseEntity
++                .status(ex.getStatus())
++                .body(response);
++    }
++
++    // 處理其他未預期例外
++    @ExceptionHandler(Exception.class)
++    public ResponseEntity<ApiRestResponse<?>> handleOtherExceptions(Exception ex) {
++        log.error("系統發生未處理的例外: {}", ex.getMessage(), ex);
++
++        ApiRestResponse<?> response = ApiRestResponse.failure(
++                "9999",
++                "系統發生錯誤，請聯絡管理員",
++                ex.getMessage()
++        );
++
++        return ResponseEntity
++                .status(500)
++                .body(response);
++    }
++}
+diff --git a/src/main/java/com/example/demo/model/Order.java b/src/main/java/com/example/demo/model/Order.java
+deleted file mode 100644
+index 66a0740..0000000
+--- a/src/main/java/com/example/demo/model/Order.java
++++ /dev/null
+@@ -1,62 +0,0 @@
+-package com.example.demo.model;
+-
+-import java.util.Date;
+-import java.util.List;
+-
+-public class Order {
+-    private Integer orderId;
+-    private Integer userId;
+-    private Integer totalAmount;
+-    private Date createdDate;
+-    private Date lastModifiedDate;
+-
+-    private List<OrderItem> orderItemList;
+-
+-    public Integer getOrderId() {
+-        return orderId;
+-    }
+-
+-    public void setOrderId(Integer orderId) {
+-        this.orderId = orderId;
+-    }
+-
+-    public Integer getUserId() {
+-        return userId;
+-    }
+-
+-    public void setUserId(Integer userId) {
+-        this.userId = userId;
+-    }
+-
+-    public Integer getTotalAmount() {
+-        return totalAmount;
+-    }
+-
+-    public void setTotalAmount(Integer totalAmount) {
+-        this.totalAmount = totalAmount;
+-    }
+-
+-    public Date getCreatedDate() {
+-        return createdDate;
+-    }
+-
+-    public void setCreatedDate(Date createdDate) {
+-        this.createdDate = createdDate;
+-    }
+-
+-    public Date getLastModifiedDate() {
+-        return lastModifiedDate;
+-    }
+-
+-    public void setLastModifiedDate(Date lastModifiedDate) {
+-        this.lastModifiedDate = lastModifiedDate;
+-    }
+-
+-    public List<OrderItem> getOrderItemList() {
+-        return orderItemList;
+-    }
+-
+-    public void setOrderItemList(List<OrderItem> orderItemList) {
+-        this.orderItemList = orderItemList;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/model/OrderItem.java b/src/main/java/com/example/demo/model/OrderItem.java
+deleted file mode 100644
+index 194af8f..0000000
+--- a/src/main/java/com/example/demo/model/OrderItem.java
++++ /dev/null
+@@ -1,68 +0,0 @@
+-package com.example.demo.model;
+-
+-public class OrderItem {
+-    private Integer orderItemId;
+-    private Integer orderId;
+-    private Integer productId;
+-    private Integer quantity;
+-    private Integer amount;
+-
+-    private String productName;
+-    private String imageUrl;
+-
+-    public Integer getOrderItemId() {
+-        return orderItemId;
+-    }
+-
+-    public void setOrderItemId(Integer orderItemId) {
+-        this.orderItemId = orderItemId;
+-    }
+-
+-    public Integer getOrderId() {
+-        return orderId;
+-    }
+-
+-    public void setOrderId(Integer orderId) {
+-        this.orderId = orderId;
+-    }
+-
+-    public Integer getProductId() {
+-        return productId;
+-    }
+-
+-    public void setProductId(Integer productId) {
+-        this.productId = productId;
+-    }
+-
+-    public Integer getQuantity() {
+-        return quantity;
+-    }
+-
+-    public void setQuantity(Integer quantity) {
+-        this.quantity = quantity;
+-    }
+-
+-    public Integer getAmount() {
+-        return amount;
+-    }
+-
+-    public void setAmount(Integer amount) {
+-        this.amount = amount;
+-    }
+-
+-    public String getProductName() {
+-        return productName;
+-    }
+-
+-    public void setProductName(String productName) {
+-        this.productName = productName;
+-    }
+-
+-    public String getImageUrl() {
+-        return imageUrl;
+-    }
+-
+-    public void setImageUrl(String imageUrl) {
+-        this.imageUrl = imageUrl;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/model/Product.java b/src/main/java/com/example/demo/model/Product.java
+deleted file mode 100644
+index 40dde0d..0000000
+--- a/src/main/java/com/example/demo/model/Product.java
++++ /dev/null
+@@ -1,89 +0,0 @@
+-package com.example.demo.model;
+-
+-import com.example.demo.constant.ProductCategory;
+-
+-import java.util.Date;
+-
+-public class Product {
+-    private Integer productId;
+-    private String productName;
+-    private ProductCategory category;
+-    private String imageUrl;
+-    private Integer price;
+-    private Integer stock;
+-    private String description;
+-    private Date createdDate;
+-    private Date lastModifiedDate;
+-
+-    public Integer getProductId() {
+-        return productId;
+-    }
+-
+-    public void setProductId(Integer productId) {
+-        this.productId = productId;
+-    }
+-
+-    public String getProductName() {
+-        return productName;
+-    }
+-
+-    public void setProductName(String productName) {
+-        this.productName = productName;
+-    }
+-
+-    public ProductCategory getCategory() {
+-        return category;
+-    }
+-
+-    public void setCategory(ProductCategory category) {
+-        this.category = category;
+-    }
+-
+-    public String getImageUrl() {
+-        return imageUrl;
+-    }
+-
+-    public void setImageUrl(String imageUrl) {
+-        this.imageUrl = imageUrl;
+-    }
+-
+-    public Integer getPrice() {
+-        return price;
+-    }
+-
+-    public void setPrice(Integer price) {
+-        this.price = price;
+-    }
+-
+-    public Integer getStock() {
+-        return stock;
+-    }
+-
+-    public void setStock(Integer stock) {
+-        this.stock = stock;
+-    }
+-
+-    public String getDescription() {
+-        return description;
+-    }
+-
+-    public void setDescription(String description) {
+-        this.description = description;
+-    }
+-
+-    public Date getCreatedDate() {
+-        return createdDate;
+-    }
+-
+-    public void setCreatedDate(Date createdDate) {
+-        this.createdDate = createdDate;
+-    }
+-
+-    public Date getLastModifiedDate() {
+-        return lastModifiedDate;
+-    }
+-
+-    public void setLastModifiedDate(Date lastModifiedDate) {
+-        this.lastModifiedDate = lastModifiedDate;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/model/User.java b/src/main/java/com/example/demo/model/User.java
+deleted file mode 100644
+index d9db4f5..0000000
+--- a/src/main/java/com/example/demo/model/User.java
++++ /dev/null
+@@ -1,56 +0,0 @@
+-package com.example.demo.model;
+-
+-import com.fasterxml.jackson.annotation.JsonIgnore;
+-
+-import java.util.Date;
+-
+-public class User {
+-    private Integer userId;
+-    private String email;
+-
+-    @JsonIgnore
+-    private String password;
+-
+-    private Date createdDate;
+-    private Date lastModifiedDate;
+-
+-    public Integer getUserId() {
+-        return userId;
+-    }
+-
+-    public void setUserId(Integer userId) {
+-        this.userId = userId;
+-    }
+-
+-    public String getEmail() {
+-        return email;
+-    }
+-
+-    public void setEmail(String email) {
+-        this.email = email;
+-    }
+-
+-    public String getPassword() {
+-        return password;
+-    }
+-
+-    public void setPassword(String password) {
+-        this.password = password;
+-    }
+-
+-    public Date getCreatedDate() {
+-        return createdDate;
+-    }
+-
+-    public void setCreatedDate(Date createdDate) {
+-        this.createdDate = createdDate;
+-    }
+-
+-    public Date getLastModifiedDate() {
+-        return lastModifiedDate;
+-    }
+-
+-    public void setLastModifiedDate(Date lastModifiedDate) {
+-        this.lastModifiedDate = lastModifiedDate;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/model/common/ApiError.java b/src/main/java/com/example/demo/model/common/ApiError.java
+new file mode 100644
+index 0000000..3e2794d
+--- /dev/null
++++ b/src/main/java/com/example/demo/model/common/ApiError.java
+@@ -0,0 +1,35 @@
++package com.example.demo.model.common;
++
++import org.springframework.http.HttpStatus;
++import java.util.List;
++
++public class ApiError {
++    private HttpStatus status;
++    private String apiErrorCode;    // API錯誤代碼
++    private String message;         // 錯誤訊息
++    private List<String> errors;    // 詳細錯誤訊息
++
++    // Constructor, getters, setters
++    public ApiError(HttpStatus status, String apiErrorCode, String message, List<String> errors) {
++        this.status = status;
++        this.apiErrorCode = apiErrorCode;
++        this.message = message;
++        this.errors = errors;
++    }
++
++    public HttpStatus getStatus() {
++        return status;
++    }
++
++    public String getApiErrorCode() {
++        return apiErrorCode;
++    }
++
++    public String getMessage() {
++        return message;
++    }
++
++    public List<String> getErrors() {
++        return errors;
++    }
++}
+diff --git a/src/main/java/com/example/demo/model/common/ApiRestResponse.java b/src/main/java/com/example/demo/model/common/ApiRestResponse.java
+new file mode 100644
+index 0000000..8391c79
+--- /dev/null
++++ b/src/main/java/com/example/demo/model/common/ApiRestResponse.java
+@@ -0,0 +1,33 @@
++package com.example.demo.model.common;
++
++import lombok.Data;
++
++@Data
++public class ApiRestResponse<T> {
++    private String returnCode;
++    private String message;
++    private boolean apiStatus;
++    private int status;
++    private String apiErrorMsg;
++    private T data;
++    public static <T> ApiRestResponse<T> success(T data) {
++        ApiRestResponse<T> res = new ApiRestResponse<>();
++        res.setReturnCode("0000");
++        res.setMessage("成功");
++        res.setApiStatus(true);
++        res.setData(data);
++        res.setStatus(200);
++        return res;
++    }
++
++    public static <T> ApiRestResponse<T> failure(String returnCode, String message, String apiErrorMsg) {
++        ApiRestResponse<T> res = new ApiRestResponse<>();
++        res.setReturnCode(returnCode);
++        res.setMessage(message);
++        res.setApiErrorMsg(apiErrorMsg);
++        res.setApiStatus(false);
++        res.setStatus(400);
++        return res;
++    }
++
++}
+diff --git a/src/main/java/com/example/demo/model/common/RestApiException.java b/src/main/java/com/example/demo/model/common/RestApiException.java
+new file mode 100644
+index 0000000..cb69af9
+--- /dev/null
++++ b/src/main/java/com/example/demo/model/common/RestApiException.java
+@@ -0,0 +1,24 @@
++package com.example.demo.model.common;
++
++import lombok.Getter;
++import org.springframework.http.HttpStatus;
++
++@Getter
++public class RestApiException extends RuntimeException {
++    private final String apiErrorCode;
++    private final HttpStatus status;
++
++    public RestApiException(String apiErrorCode, String message, HttpStatus status) {
++        super(message);
++        this.apiErrorCode = apiErrorCode;
++        this.status = status;
++    }
++
++    public RestApiException(String apiErrorCode, String message) {
++        this(apiErrorCode, message, HttpStatus.BAD_REQUEST);
++    }
++
++    public RestApiException(String message) {
++        this("9999", message, HttpStatus.INTERNAL_SERVER_ERROR);
++    }
++}
+diff --git a/src/main/java/com/example/demo/repository/PricePredictionRepository.java b/src/main/java/com/example/demo/repository/PricePredictionRepository.java
+new file mode 100644
+index 0000000..ce59645
+--- /dev/null
++++ b/src/main/java/com/example/demo/repository/PricePredictionRepository.java
+@@ -0,0 +1,10 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.PricePrediction;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++import java.util.List;
++
++public interface PricePredictionRepository extends JpaRepository<PricePrediction, Long> {
++    List<PricePrediction> findByStock_StockIdOrderByPredictionDateDesc(Long stockId);
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/example/demo/repository/StockPriceRepository.java b/src/main/java/com/example/demo/repository/StockPriceRepository.java
+new file mode 100644
+index 0000000..dc72fc8
+--- /dev/null
++++ b/src/main/java/com/example/demo/repository/StockPriceRepository.java
+@@ -0,0 +1,12 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.StockPrice;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++import java.util.List;
++
++@Repository
++public interface StockPriceRepository extends JpaRepository<StockPrice, Long> {
++    List<StockPrice> findByStock_StockIdOrderByTradeDateDesc(Long stockId);
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/example/demo/repository/StockRepository.java b/src/main/java/com/example/demo/repository/StockRepository.java
+new file mode 100644
+index 0000000..0c8b769
+--- /dev/null
++++ b/src/main/java/com/example/demo/repository/StockRepository.java
+@@ -0,0 +1,12 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.Stock;
++import com.example.demo.entity.StockPrice;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++import java.util.List;
++import java.util.Optional;
++
++public interface StockRepository extends JpaRepository<Stock, Long> {
++    List<Stock> findAll();
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/example/demo/repository/UserRepository.java b/src/main/java/com/example/demo/repository/UserRepository.java
+new file mode 100644
+index 0000000..866fff3
+--- /dev/null
++++ b/src/main/java/com/example/demo/repository/UserRepository.java
+@@ -0,0 +1,10 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.User;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++import java.util.Optional;
++
++public interface UserRepository extends JpaRepository<User,Long> {
++
++}
+diff --git a/src/main/java/com/example/demo/repository/WatchlistRepository.java b/src/main/java/com/example/demo/repository/WatchlistRepository.java
+new file mode 100644
+index 0000000..5f94713
+--- /dev/null
++++ b/src/main/java/com/example/demo/repository/WatchlistRepository.java
+@@ -0,0 +1,10 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.Watchlist;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++import java.util.List;
++
++public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
++    List<Watchlist> findByUser_UserId(Long userId);
++}
+\ No newline at end of file
+diff --git a/src/main/java/com/example/demo/rowmapper/OrderItemRowMapper.java b/src/main/java/com/example/demo/rowmapper/OrderItemRowMapper.java
+deleted file mode 100644
+index e35a660..0000000
+--- a/src/main/java/com/example/demo/rowmapper/OrderItemRowMapper.java
++++ /dev/null
+@@ -1,23 +0,0 @@
+-package com.example.demo.rowmapper;
+-
+-import com.example.demo.model.OrderItem;
+-import org.springframework.jdbc.core.RowMapper;
+-
+-import java.sql.ResultSet;
+-import java.sql.SQLException;
+-
+-public class OrderItemRowMapper implements RowMapper<OrderItem> {
+-    @Override
+-    public OrderItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+-        OrderItem orderItem = new OrderItem();
+-        orderItem.setOrderId(rs.getInt("order_id"));
+-        orderItem.setProductId(rs.getInt("product_id"));
+-        orderItem.setOrderItemId(rs.getInt("order_item_id"));
+-        orderItem.setQuantity(rs.getInt("quantity"));
+-        orderItem.setAmount(rs.getInt("amount"));
+-
+-        orderItem.setProductName(rs.getString("product_name"));
+-        orderItem.setImageUrl(rs.getString("image_url"));
+-        return orderItem;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/rowmapper/OrderRowMapper.java b/src/main/java/com/example/demo/rowmapper/OrderRowMapper.java
+deleted file mode 100644
+index 75b2e56..0000000
+--- a/src/main/java/com/example/demo/rowmapper/OrderRowMapper.java
++++ /dev/null
+@@ -1,24 +0,0 @@
+-package com.example.demo.rowmapper;
+-
+-import com.example.demo.model.Order;
+-import org.springframework.jdbc.core.RowMapper;
+-
+-import java.sql.ResultSet;
+-import java.sql.SQLException;
+-
+-public class OrderRowMapper implements RowMapper<Order> {
+-
+-    @Override
+-    public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+-
+-        Order order = new Order();
+-
+-        order.setOrderId(rs.getInt("order_id"));
+-        order.setUserId(rs.getInt("user_id"));
+-        order.setTotalAmount(rs.getInt("total_amount"));
+-        order.setCreatedDate(rs.getTimestamp("created_date"));
+-        order.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
+-
+-        return order;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/rowmapper/ProductRowMapper.java b/src/main/java/com/example/demo/rowmapper/ProductRowMapper.java
+deleted file mode 100644
+index 30cbc2d..0000000
+--- a/src/main/java/com/example/demo/rowmapper/ProductRowMapper.java
++++ /dev/null
+@@ -1,34 +0,0 @@
+-package com.example.demo.rowmapper;
+-
+-import com.example.demo.constant.ProductCategory;
+-import com.example.demo.model.Product;
+-import org.springframework.jdbc.core.RowMapper;
+-
+-import java.sql.ResultSet;
+-import java.sql.SQLException;
+-
+-public class ProductRowMapper implements RowMapper<Product> {
+-
+-    @Override
+-    public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+-        Product product = new Product();
+-
+-        product.setProductId(rs.getInt("product_id"));
+-        product.setProductName(rs.getString("product_name"));
+-
+-        // 寫法1
+-//        String categoryStr = rs.getString("category");
+-//        ProductCategory category = ProductCategory.valueOf(categoryStr);
+-//        product.setCategory(String.valueOf(category));
+-        // 寫法2
+-        product.setCategory(ProductCategory.valueOf(rs.getString("category")));
+-
+-        product.setImageUrl(rs.getString("image_url"));
+-        product.setPrice(rs.getInt("price"));
+-        product.setStock(rs.getInt("stock"));
+-        product.setDescription(rs.getString("description"));
+-        product.setCreatedDate(rs.getTimestamp("created_date"));
+-        product.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
+-        return product;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/rowmapper/UserRowMapper.java b/src/main/java/com/example/demo/rowmapper/UserRowMapper.java
+deleted file mode 100644
+index bfdbad9..0000000
+--- a/src/main/java/com/example/demo/rowmapper/UserRowMapper.java
++++ /dev/null
+@@ -1,23 +0,0 @@
+-package com.example.demo.rowmapper;
+-
+-import com.example.demo.model.User;
+-import org.springframework.jdbc.core.RowMapper;
+-
+-import java.sql.ResultSet;
+-import java.sql.SQLException;
+-
+-public class UserRowMapper implements RowMapper<User> {
+-    @Override
+-    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+-
+-        User user = new User();
+-
+-        user.setUserId(rs.getInt("user_id"));
+-        user.setEmail(rs.getString("email"));
+-        user.setPassword(rs.getString("password"));
+-        user.setCreatedDate(rs.getTimestamp("created_date"));
+-        user.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
+-
+-        return user;
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/service/OrderService.java b/src/main/java/com/example/demo/service/OrderService.java
+deleted file mode 100644
+index ad944ae..0000000
+--- a/src/main/java/com/example/demo/service/OrderService.java
++++ /dev/null
+@@ -1,18 +0,0 @@
+-package com.example.demo.service;
+-
+-import com.example.demo.dto.CreateOrderRequest;
+-import com.example.demo.dto.OrderQueryParams;
+-import com.example.demo.model.Order;
+-
+-import java.util.List;
+-
+-public interface OrderService {
+-    Integer createOrder(Integer userId, CreateOrderRequest createOrderRequest);
+-
+-    Order getOrderById(Integer orderId);
+-
+-    List<Order> getOrders(OrderQueryParams orderQueryParams);
+-
+-    Integer countOrders(OrderQueryParams orderQueryParams);
+-
+-}
+diff --git a/src/main/java/com/example/demo/service/ProductService.java b/src/main/java/com/example/demo/service/ProductService.java
+deleted file mode 100644
+index 5d6c433..0000000
+--- a/src/main/java/com/example/demo/service/ProductService.java
++++ /dev/null
+@@ -1,22 +0,0 @@
+-package com.example.demo.service;
+-
+-import com.example.demo.dto.ProductQueryParams;
+-import com.example.demo.dto.ProductRequest;
+-import com.example.demo.model.Product;
+-import jakarta.validation.Valid;
+-
+-import java.util.List;
+-
+-public interface ProductService {
+-    Product getProductById(Integer productId);
+-
+-    Integer createProduct(@Valid ProductRequest productRequest);
+-
+-    void updateProduct(Integer productId, @Valid ProductRequest productRequest);
+-
+-    void deleteProductById(Integer productId);
+-
+-    List<Product> getProducts(ProductQueryParams productQueryParams);
+-
+-    Integer countProduct(ProductQueryParams productQueryParams);
+-}
+diff --git a/src/main/java/com/example/demo/service/StockService.java b/src/main/java/com/example/demo/service/StockService.java
+new file mode 100644
+index 0000000..93364e5
+--- /dev/null
++++ b/src/main/java/com/example/demo/service/StockService.java
+@@ -0,0 +1,10 @@
++package com.example.demo.service;
++
++import com.example.demo.entity.Stock;
++
++import java.util.List;
++
++
++public interface StockService {
++    List<Stock> getAllStocks();
++}
+diff --git a/src/main/java/com/example/demo/service/UserService.java b/src/main/java/com/example/demo/service/UserService.java
+deleted file mode 100644
+index c35e35a..0000000
+--- a/src/main/java/com/example/demo/service/UserService.java
++++ /dev/null
+@@ -1,14 +0,0 @@
+-package com.example.demo.service;
+-
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.example.demo.model.User;
+-import jakarta.validation.Valid;
+-
+-public interface UserService {
+-    Integer register(@Valid UserRegisterRequest  userRegisterRequest);
+-
+-    User getUserById(Integer userId);
+-
+-    User login(UserLoginRequest userLoginRequest);
+-}
+diff --git a/src/main/java/com/example/demo/service/impl/OrderServiceImpl.java b/src/main/java/com/example/demo/service/impl/OrderServiceImpl.java
+deleted file mode 100644
+index 364ab9b..0000000
+--- a/src/main/java/com/example/demo/service/impl/OrderServiceImpl.java
++++ /dev/null
+@@ -1,125 +0,0 @@
+-package com.example.demo.service.impl;
+-
+-import com.example.demo.dao.OrderDao;
+-import com.example.demo.dao.ProductDao;
+-import com.example.demo.dao.UserDao;
+-import com.example.demo.dto.BuyItem;
+-import com.example.demo.dto.CreateOrderRequest;
+-import com.example.demo.dto.OrderQueryParams;
+-import com.example.demo.model.Order;
+-import com.example.demo.model.OrderItem;
+-import com.example.demo.model.Product;
+-import com.example.demo.model.User;
+-import com.example.demo.service.OrderService;
+-import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.data.domain.jaxb.SpringDataJaxb;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.stereotype.Component;
+-import org.springframework.transaction.annotation.Transactional;
+-import org.springframework.web.server.ResponseStatusException;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-@Component
+-public class OrderServiceImpl implements OrderService {
+-
+-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+-
+-    @Autowired
+-    private OrderDao orderDao;
+-
+-    @Autowired
+-    private ProductDao productDao;
+-
+-    @Autowired
+-    private UserDao userDao;
+-
+-    @Transactional
+-    @Override
+-    public Integer createOrder(Integer userId, CreateOrderRequest createOrderRequest) {
+-
+-        // 檢查 User 是否存在
+-        User user = userDao.getUserById(userId);
+-
+-        if(user == null){
+-            log.warn("該 userId {} 不存在",userId);
+-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-        }
+-
+-
+-        int totalAmount = 0;
+-        List<OrderItem> orderItemList = new ArrayList<>();
+-
+-        for (BuyItem buyItem : createOrderRequest.getBuyItemList()) {
+-            Product product = productDao.getProductById(buyItem.getProductId());
+-
+-
+-            // 檢查 product 是否存在和庫存是否足夠
+-            if(product == null){
+-                log.warn("商品 {} 不存在", buyItem.getProductId());
+-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-            }else if(product.getStock() < buyItem.getQuantity()){
+-                log.warn("商品 {} 庫存數量不足，無法購買。剩餘庫存 {}，欲購買數量 {}",buyItem.getProductId(),product.getStock(),buyItem.getQuantity());
+-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-            }
+-
+-            // 扣除商品庫存
+-            productDao.updateStock(product.getProductId(),product.getStock() - buyItem.getQuantity());
+-
+-            //計算總金額
+-            int amount = buyItem.getQuantity() * product.getPrice();
+-            totalAmount = totalAmount + amount;
+-
+-            // 轉換 BuyItem to OrderItem
+-            OrderItem orderItem = new OrderItem();
+-            orderItem.setAmount(amount);
+-            orderItem.setProductId(buyItem.getProductId());
+-            orderItem.setQuantity(buyItem.getQuantity());
+-
+-            orderItemList.add(orderItem);
+-        }
+-
+-
+-
+-        // 創建訂單
+-        Integer orderId = orderDao.createOrder(userId, totalAmount);
+-
+-        orderDao.createOrderItems(orderId, orderItemList);
+-
+-        return orderId;
+-
+-    }
+-
+-    @Override
+-    public Order getOrderById(Integer orderId) {
+-        Order order = orderDao.getOrderById(orderId);
+-
+-        List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+-
+-        order.setOrderItemList(orderItemList);
+-
+-        return order;
+-
+-    }
+-
+-    @Override
+-    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+-
+-        List<Order> orderList =  orderDao.getOrders(orderQueryParams);
+-
+-        for(Order order : orderList){
+-            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrderId());
+-
+-            order.setOrderItemList(orderItemList);
+-        }
+-        return orderList;
+-    }
+-
+-    @Override
+-    public Integer countOrders(OrderQueryParams orderQueryParams) {
+-        return orderDao.countOrder(orderQueryParams);
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/service/impl/ProductServiceImpl.java b/src/main/java/com/example/demo/service/impl/ProductServiceImpl.java
+deleted file mode 100644
+index 1cd0532..0000000
+--- a/src/main/java/com/example/demo/service/impl/ProductServiceImpl.java
++++ /dev/null
+@@ -1,48 +0,0 @@
+-package com.example.demo.service.impl;
+-
+-import com.example.demo.dao.ProductDao;
+-import com.example.demo.dto.ProductQueryParams;
+-import com.example.demo.dto.ProductRequest;
+-import com.example.demo.model.Product;
+-import com.example.demo.service.ProductService;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.stereotype.Component;
+-
+-import java.util.List;
+-
+-@Component
+-public class ProductServiceImpl implements ProductService {
+-    @Autowired
+-    private ProductDao productDao;
+-
+-    @Override
+-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+-        return productDao.getProducts(productQueryParams);
+-    }
+-
+-    @Override
+-    public Integer createProduct(ProductRequest productRequest) {
+-
+-        return productDao.createProduct(productRequest);
+-    }
+-
+-    @Override
+-    public void updateProduct(Integer productId, ProductRequest productRequest) {
+-        productDao.updateProduct(productId, productRequest);
+-    }
+-
+-    @Override
+-    public Product getProductById(Integer productId) {
+-        return productDao.getProductById(productId);
+-    }
+-
+-    @Override
+-    public void deleteProductById(Integer productId) {
+-        productDao.deleteProductById(productId);
+-    }
+-
+-    @Override
+-    public Integer countProduct(ProductQueryParams productQueryParams) {
+-        return productDao.countProduct(productQueryParams);
+-    }
+-}
+diff --git a/src/main/java/com/example/demo/service/impl/StockServiceImpl.java b/src/main/java/com/example/demo/service/impl/StockServiceImpl.java
+new file mode 100644
+index 0000000..58329d4
+--- /dev/null
++++ b/src/main/java/com/example/demo/service/impl/StockServiceImpl.java
+@@ -0,0 +1,24 @@
++package com.example.demo.service.impl;
++
++import com.example.demo.entity.Stock;
++import com.example.demo.repository.StockRepository;
++import com.example.demo.service.StockService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++
++@Service
++public class StockServiceImpl implements StockService {
++
++    @Autowired
++    private StockRepository stockRepository;
++
++
++    @Override
++    public List<Stock> getAllStocks() {
++        List<Stock> stockList = stockRepository.findAll();
++        System.out.println("stockList: "+stockList);
++        return stockList;
++    }
++}
+diff --git a/src/main/java/com/example/demo/service/impl/UserServiceImpl.java b/src/main/java/com/example/demo/service/impl/UserServiceImpl.java
+deleted file mode 100644
+index dd76a24..0000000
+--- a/src/main/java/com/example/demo/service/impl/UserServiceImpl.java
++++ /dev/null
+@@ -1,72 +0,0 @@
+-package com.example.demo.service.impl;
+-
+-import com.example.demo.dao.UserDao;
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.example.demo.model.User;
+-import com.example.demo.service.UserService;
+-import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.stereotype.Component;
+-import org.springframework.util.DigestUtils;
+-import org.springframework.web.server.ResponseStatusException;
+-
+-@Component
+-public class UserServiceImpl implements UserService {
+-    @Autowired
+-    private UserDao userDao;
+-
+-    private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+-
+-    @Override
+-    public Integer register(UserRegisterRequest userRegisterRequest) {
+-
+-        // 檢查email是否已存在
+-        User user = userDao.getUserByEmail(userRegisterRequest.getEmail());
+-
+-        // email已被註冊過 -> 回傳前端不可重複註冊
+-        if (user != null) {
+-            log.warn("該 email {} 已經被註冊", userRegisterRequest.getEmail());
+-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-        }
+-
+-        // 使用 MD5 生成密碼的雜湊值
+-        String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+-        userRegisterRequest.setPassword(hashedPassword);
+-
+-        // 建立帳號
+-        return userDao.createUser(userRegisterRequest);
+-    }
+-
+-    @Override
+-    public User getUserById(Integer userId) {
+-        return userDao.getUserById(userId);
+-    }
+-
+-    @Override
+-    public User login(UserLoginRequest userLoginRequest) {
+-
+-        // 透過 getUserByEmail 檢查是否註冊過
+-        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+-
+-        // 未註冊
+-        if (user == null) {
+-            log.warn("該 email {} 尚未註冊", userLoginRequest.getEmail());
+-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-        }
+-
+-        // 使用 MD5 生成密碼的雜湊值
+-        String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
+-
+-
+-        // 已註冊 -> 判斷密碼是否正確
+-        if (user.getPassword().equals(hashedPassword)) {
+-            return user;
+-        } else {
+-            log.warn("email {} 密碼不正確", userLoginRequest.getEmail());
+-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+-        }
+-    }
+-}
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+index b10d43f..18cbfd4 100644
+--- a/src/main/resources/application.properties
++++ b/src/main/resources/application.properties
+@@ -1,8 +1,19 @@
+-spring.application.name=eshop
++spring.application.name=stock
+ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+-spring.datasource.url=jdbc:mysql://localhost:3306/mall?serverTimezone=Asia/Taipei&characterEncoding=utf-8
++spring.datasource.url=jdbc:mysql://localhost:3306/stock?serverTimezone=Asia/Taipei&characterEncoding=utf-8
+ spring.datasource.username=root
+ spring.datasource.password=springboot
+ 
+ spring.jackson.time-zone=GMT+8
+-spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+\ No newline at end of file
++spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
++
++# ?? Swagger API ?????
++springdoc.api-docs.path=/api-docs
++springdoc.api-docs.enable=true
++# ?? Swagger UI ????
++springdoc.swagger-ui.path=/swagger-ui.html
++springdoc.swagger-ui.enabled=true
++## ?????????
++## ?????????????
++#server.servlet.context-path=/backend
++#springdoc.swagger-ui.use-root-path=true
+diff --git a/src/test/java/com/example/demo/EshopApplicationTests.java b/src/test/java/com/example/demo/StockApplicationTests.java
+similarity index 85%
+rename from src/test/java/com/example/demo/EshopApplicationTests.java
+rename to src/test/java/com/example/demo/StockApplicationTests.java
+index 1d91729..5c41f56 100644
+--- a/src/test/java/com/example/demo/EshopApplicationTests.java
++++ b/src/test/java/com/example/demo/StockApplicationTests.java
+@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
+ import org.springframework.boot.test.context.SpringBootTest;
+ 
+ @SpringBootTest
+-class EshopApplicationTests {
++class StockApplicationTests {
+ 
+ 	@Test
+ 	void contextLoads() {
+diff --git a/src/test/java/com/example/demo/controller/OrderControllerTest.java b/src/test/java/com/example/demo/controller/OrderControllerTest.java
+deleted file mode 100644
+index c8b1ea6..0000000
+--- a/src/test/java/com/example/demo/controller/OrderControllerTest.java
++++ /dev/null
+@@ -1,117 +0,0 @@
+-package com.example.demo.controller;
+-
+-import com.example.demo.dto.BuyItem;
+-import com.example.demo.dto.CreateOrderRequest;
+-import com.example.demo.model.OrderItem;
+-import com.fasterxml.jackson.databind.ObjectMapper;
+-import org.junit.jupiter.api.Test;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+-import org.springframework.boot.test.context.SpringBootTest;
+-import org.springframework.http.MediaType;
+-import org.springframework.test.web.servlet.MockMvc;
+-import org.springframework.test.web.servlet.RequestBuilder;
+-import org.springframework.test.web.servlet.ResultActions;
+-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+-import org.springframework.transaction.annotation.Transactional;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-import static org.hamcrest.Matchers.hasSize;
+-import static org.hamcrest.Matchers.notNullValue;
+-import static org.hamcrest.Matchers.equalTo;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+-
+-@SpringBootTest
+-@AutoConfigureMockMvc
+-public class OrderControllerTest {
+-    @Autowired
+-    private MockMvc mockMvc;
+-
+-    private ObjectMapper objectMapper = new ObjectMapper();
+-
+-    // 查詢訂單
+-    @Test
+-    public void getOrders_success() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/users/{userId}/orders", 1);
+-
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.results", notNullValue()));
+-
+-
+-    }
+-
+-    @Test
+-    public void getOrders_notFound() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/users/{userId}/orders", 100);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.results",hasSize(0)))
+-                ;
+-
+-    }
+-
+-    // 創建訂單
+-    @Test
+-    @Transactional
+-    public void createOrder_success() throws Exception {
+-
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/{userId}/orders", 2)
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(
+-                        """
+-                                {
+-                                  "buyItemList":[
+-                                    {
+-                                      "productId":4,
+-                                      "quantity":10
+-                                    }
+-                                  ]
+-                                }
+-                                """
+-                );
+-
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(201))
+-                .andExpect(jsonPath("$.limit", equalTo(10)))
+-                .andExpect(jsonPath("$.offset", equalTo(0)))
+-                .andExpect(jsonPath("$.total", equalTo(2)))
+-                .andExpect(jsonPath("$.results", notNullValue()));
+-
+-    }
+-
+-    @Test
+-    @Transactional
+-    public void createOrder_illegalArgument() throws Exception {
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/{userId}/orders", 6)
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(
+-                        """
+-                                {
+-                                  "buyItemList":[
+-                                    {
+-                                      "productId":4,
+-                                    }
+-                                  ]
+-                                }
+-                                """
+-                );
+-
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-}
+diff --git a/src/test/java/com/example/demo/controller/ProductControllerTest.java b/src/test/java/com/example/demo/controller/ProductControllerTest.java
+deleted file mode 100644
+index 4849efb..0000000
+--- a/src/test/java/com/example/demo/controller/ProductControllerTest.java
++++ /dev/null
+@@ -1,271 +0,0 @@
+-package com.example.demo.controller;
+-
+-import com.example.demo.constant.ProductCategory;
+-import com.example.demo.dto.ProductRequest;
+-import com.fasterxml.jackson.databind.ObjectMapper;
+-import org.junit.jupiter.api.Test;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+-import org.springframework.boot.test.context.SpringBootTest;
+-import org.springframework.http.MediaType;
+-import org.springframework.test.web.servlet.MockMvc;
+-import org.springframework.test.web.servlet.RequestBuilder;
+-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+-import org.springframework.transaction.annotation.Transactional;
+-
+-import static org.hamcrest.Matchers.equalTo;
+-import static org.hamcrest.Matchers.hasSize;
+-import static org.hamcrest.Matchers.notNullValue;
+-import static org.hamcrest.Matchers.nullValue;
+-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+-
+-@SpringBootTest
+-@AutoConfigureMockMvc
+-public class ProductControllerTest {
+-
+-    @Autowired
+-    private MockMvc mockMvc;
+-
+-    private ObjectMapper objectMapper = new ObjectMapper();
+-
+-    // 查詢商品
+-    @Test
+-    public void getProduct_success() throws Exception {
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products/{productId}", 1);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andDo(print())
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.productName", equalTo("蘋果（澳洲）")))
+-                .andExpect(jsonPath("$.category", equalTo("FOOD")))
+-                .andExpect(jsonPath("$.imageUrl", notNullValue()))
+-                .andReturn();
+-    }
+-
+-    @Test
+-    public void getProduct_notFound() throws Exception {
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products/{productId}", 100);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(404));
+-    }
+-
+-    //創建商品
+-    @Transactional
+-    @Test
+-    public void createProduct_success() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/products")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(
+-                        """
+-                                  {"productName":"Toyota",
+-                                  "category":"CAR",
+-                                  "imageUrl":"https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg",
+-                                  "price":900,
+-                                  "stock":12}
+-                                """
+-                );
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(201))
+-                .andExpect(jsonPath("$.productName", equalTo("Toyota")))
+-                .andExpect(jsonPath("$.category", equalTo("CAR")))
+-                .andExpect(jsonPath("$.imageUrl", equalTo("https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg")))
+-                .andExpect(jsonPath("$.price", equalTo(900)))
+-                .andExpect(jsonPath("$.stock", equalTo(12)))
+-                .andExpect(jsonPath("$.description", nullValue()))
+-                .andExpect(jsonPath("$.createdDate", notNullValue()))
+-                .andExpect(jsonPath("$.lastModifiedDate", notNullValue()))
+-        ;
+-
+-    }
+-
+-    @Test
+-    @Transactional
+-    public void createProduct_illegalArgument() throws Exception {
+-        ProductRequest productRequest = new ProductRequest();
+-        productRequest.setProductName("test product");
+-        productRequest.setCategory(ProductCategory.FOOD);
+-
+-        String json = objectMapper.writeValueAsString(productRequest);
+-
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/products")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-
+-    //更新商品
+-    @Test
+-    @Transactional
+-    public void updateProduct_success() throws Exception {
+-        ProductRequest productRequest = new ProductRequest();
+-        productRequest.setProductName("test");
+-        productRequest.setCategory(ProductCategory.FOOD);
+-        productRequest.setPrice(100);
+-        productRequest.setStock(10);
+-        productRequest.setImageUrl("");
+-
+-        String json = objectMapper.writeValueAsString(productRequest);
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .put("/products/{productId}", 3)
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.productName", equalTo("test")))
+-                .andExpect(jsonPath("$.category", equalTo("FOOD")))
+-                .andExpect(jsonPath("$.imageUrl", equalTo("")))
+-                .andExpect(jsonPath("$.price", equalTo(100)))
+-                .andExpect(jsonPath("$.stock", equalTo(10)))
+-                .andExpect(jsonPath("$.description", nullValue()))
+-                .andExpect(jsonPath("$.createdDate", notNullValue()))
+-                .andExpect(jsonPath("$.lastModifiedDate", notNullValue()));
+-    }
+-
+-    @Test
+-    @Transactional
+-    public void updateProduct_illegalArgument() throws Exception {
+-        ProductRequest productRequest = new ProductRequest();
+-        productRequest.setProductName("test product");
+-        productRequest.setCategory(ProductCategory.FOOD);
+-
+-        String json = objectMapper.writeValueAsString(productRequest);
+-
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .put("/products/{productId}", 3)
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-    @Test
+-    @Transactional
+-    public void updateProduct_productNotFount() throws Exception {
+-        ProductRequest productRequest = new ProductRequest();
+-        productRequest.setProductName("test");
+-        productRequest.setCategory(ProductCategory.FOOD);
+-        productRequest.setPrice(100);
+-        productRequest.setStock(10);
+-        productRequest.setImageUrl("");
+-
+-        String json = objectMapper.writeValueAsString(productRequest);
+-
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .put("/products/{productId}", 100)
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(404));
+-    }
+-
+-    //刪除商品
+-    @Test
+-    @Transactional
+-    public void deleteProduct_success() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .delete("/products/{productId}", 1);
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(204));
+-    }
+-
+-    @Test
+-    @Transactional
+-    public void deleteProduct_deleteNonExistingProduct() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .delete("/products/{productId}", 1000);
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(204));
+-    }
+-
+-    //查詢商品列表
+-    @Test
+-    public void getProducts() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products");
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.limit", notNullValue()))
+-                .andExpect(jsonPath("$.offset", notNullValue()))
+-                .andExpect(jsonPath("$.total", notNullValue()))
+-                .andExpect(jsonPath("$.results", hasSize(5)));
+-
+-    }
+-
+-    @Test
+-    public void getProducts_filtering() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products")
+-                .param("search","B")
+-                .param("category","CAR");
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.limit", notNullValue()))
+-                .andExpect(jsonPath("$.offset", notNullValue()))
+-                .andExpect(jsonPath("$.total", notNullValue()))
+-                .andExpect(jsonPath("$.results", hasSize(1)));
+-
+-    }
+-
+-    @Test
+-    public void getProducts_sorting() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products")
+-                .param("orderBy","stock")
+-                .param("sortBy","desc");
+-
+-        mockMvc.perform(requestBuilder)
+-                .andDo(print())
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.limit", notNullValue()))
+-                .andExpect(jsonPath("$.offset", notNullValue()))
+-                .andExpect(jsonPath("$.total", notNullValue()))
+-                .andExpect(jsonPath("$.results", hasSize(5)))
+-                .andExpect(jsonPath("$.results[0].productId",equalTo(2)))
+-                .andExpect(jsonPath("$.results[1].productId",equalTo(5)))
+-                .andExpect(jsonPath("$.results[2].productId",equalTo(3)))
+-                .andExpect(jsonPath("$.results[3].productId",equalTo(6)));
+-
+-    }
+-
+-    @Test
+-    public void getProducts_pagination() throws Exception {
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .get("/products")
+-                .param("limit","2")
+-                .param("offset","2");
+-
+-        mockMvc.perform(requestBuilder)
+-                .andDo(print())
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.limit", notNullValue()))
+-                .andExpect(jsonPath("$.offset", notNullValue()))
+-                .andExpect(jsonPath("$.total", notNullValue()))
+-                .andExpect(jsonPath("$.results", hasSize(2)))
+-                .andExpect(jsonPath("$.results[0].productId",equalTo(3)))
+-                .andExpect(jsonPath("$.results[1].productId",equalTo(4)));
+-
+-    }
+-
+-
+-}
+\ No newline at end of file
+diff --git a/src/test/java/com/example/demo/controller/UserControllerTest.java b/src/test/java/com/example/demo/controller/UserControllerTest.java
+deleted file mode 100644
+index 46753f5..0000000
+--- a/src/test/java/com/example/demo/controller/UserControllerTest.java
++++ /dev/null
+@@ -1,193 +0,0 @@
+-package com.example.demo.controller;
+-
+-import com.example.demo.dto.UserLoginRequest;
+-import com.example.demo.dto.UserRegisterRequest;
+-import com.fasterxml.jackson.core.JsonProcessingException;
+-import com.fasterxml.jackson.databind.ObjectMapper;
+-import org.apache.coyote.Request;
+-import org.junit.jupiter.api.Test;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+-import org.springframework.boot.test.context.SpringBootTest;
+-import org.springframework.http.MediaType;
+-import org.springframework.test.web.servlet.MockMvc;
+-import org.springframework.test.web.servlet.RequestBuilder;
+-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+-import org.springframework.transaction.annotation.Transactional;
+-
+-import java.util.HashMap;
+-import java.util.Map;
+-
+-import static org.hamcrest.Matchers.equalTo;
+-import static org.hamcrest.Matchers.notNullValue;
+-import static org.junit.jupiter.api.Assertions.*;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+-
+-@SpringBootTest
+-@AutoConfigureMockMvc
+-class UserControllerTest {
+-
+-    @Autowired
+-    private MockMvc mockMvc;
+-
+-    private ObjectMapper objectMapper = new ObjectMapper();
+-
+-    // 註冊新帳號
+-    @Transactional
+-    @Test
+-    public void register_success() throws Exception {
+-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+-        userRegisterRequest.setPassword("123");
+-        userRegisterRequest.setEmail("123@gmail.com");
+-
+-        String json = objectMapper.writeValueAsString(userRegisterRequest);
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/register")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(201))
+-                .andExpect(jsonPath("$.userId", notNullValue()))
+-                .andExpect(jsonPath("$.email", equalTo("123@gmail.com")))
+-                .andExpect(jsonPath("$.createdDate", notNullValue()))
+-                .andExpect(jsonPath("$.lastModifiedDate", notNullValue()));
+-    }
+-
+-    @Transactional
+-    @Test
+-    public void register_invalidEmailFormat() throws Exception {
+-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+-        userRegisterRequest.setPassword("123");
+-        userRegisterRequest.setEmail("123gmailcom");
+-
+-        String json = objectMapper.writeValueAsString(userRegisterRequest);
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/register")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-    @Transactional
+-    @Test
+-    public void register_emailAlreadyExist() throws Exception {
+-        // 先註冊一個帳號
+-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+-        userRegisterRequest.setPassword("123");
+-        userRegisterRequest.setEmail("123@gmail.com");
+-
+-        String json = objectMapper.writeValueAsString(userRegisterRequest);
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/register")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(201));
+-
+-        // 再次使用同個 email 註冊
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-    // 登入
+-    @Transactional
+-    @Test
+-    public void login_success() throws Exception {
+-        // 先註冊新帳號
+-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+-        userRegisterRequest.setPassword("123");
+-        userRegisterRequest.setEmail("123@gmail.com");
+-
+-        // 不可依賴其他單元測試，因此單獨撰寫註冊功能來使用！！！
+-        register(userRegisterRequest);
+-
+-        // 測試登入功能
+-        UserLoginRequest userLoginRequest = new UserLoginRequest();
+-        userLoginRequest.setEmail(userRegisterRequest.getEmail());
+-        userLoginRequest.setPassword(userRegisterRequest.getPassword());
+-
+-
+-        String json = objectMapper.writeValueAsString(userLoginRequest);
+-
+-        RequestBuilder requestBuilder= MockMvcRequestBuilders
+-                .post("/users/login")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().isOk())
+-                .andExpect(jsonPath("$.userId",notNullValue()))
+-                .andExpect(jsonPath("$.email",equalTo("123@gmail.com")))
+-                .andExpect(jsonPath("$.createdDate",notNullValue()))
+-                .andExpect(jsonPath("$.lastModifiedDate",notNullValue()));
+-    }
+-
+-    @Test
+-    public void login_emailNotExist() throws Exception {
+-        // 測試登入功能
+-        UserLoginRequest userLoginRequest = new UserLoginRequest();
+-        userLoginRequest.setEmail("emailNotExit@gmail.com");
+-        userLoginRequest.setPassword("123");
+-
+-
+-        String json = objectMapper.writeValueAsString(userLoginRequest);
+-
+-        RequestBuilder requestBuilder= MockMvcRequestBuilders
+-                .post("/users/login")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-    @Transactional
+-    @Test
+-    public void login_wrongPassword() throws Exception {
+-        // 先註冊新帳號
+-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+-        userRegisterRequest.setPassword("123");
+-        userRegisterRequest.setEmail("123@gmail.com");
+-
+-        // 不可依賴其他單元測試，因此單獨撰寫註冊功能來使用！！！
+-        register(userRegisterRequest);
+-
+-        // 測試登入功能
+-        UserLoginRequest userLoginRequest = new UserLoginRequest();
+-        userLoginRequest.setEmail(userRegisterRequest.getEmail());
+-        userLoginRequest.setPassword("wrongPassword");
+-
+-
+-        String json = objectMapper.writeValueAsString(userLoginRequest);
+-
+-        RequestBuilder requestBuilder= MockMvcRequestBuilders
+-                .post("/users/login")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(400));
+-    }
+-
+-    private void register(UserRegisterRequest userRegisterRequest) throws Exception {
+-        String json = objectMapper.writeValueAsString(userRegisterRequest);
+-
+-        RequestBuilder requestBuilder = MockMvcRequestBuilders
+-                .post("/users/register")
+-                .contentType(MediaType.APPLICATION_JSON)
+-                .content(json);
+-
+-        mockMvc.perform(requestBuilder)
+-                .andExpect(status().is(201));
+-    }
+-
+-
+-}
+\ No newline at end of file
+diff --git a/src/test/resources/data.sql b/src/test/resources/data.sql
+index 33d8667..796ba01 100644
+--- a/src/test/resources/data.sql
++++ b/src/test/resources/data.sql
+@@ -1,13 +1,60 @@
+--- product
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('蘋果（澳洲）', 'FOOD', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 20, 10, '這是來自澳洲的蘋果！', '2020-03-01 02:41:28', '2022-03-01 02:41:32');
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('蘋果（日本）', 'FOOD', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 70, 109, '這是來自日本的蘋果！', '2021-03-02 02:41:28', '2022-03-01 02:41:32');
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('這是蘋果喔', 'FOOD', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 25, 100, '這是蘋果！', '2025-03-01 01:41:28', '2022-03-01 02:41:32');
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('TOYOTA', 'CAR', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 20900, 1, '這是TOYOTA', '2024-03-11 02:41:28', '2022-03-01 02:41:32');
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('BMW', 'CAR', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 20000, 102, 'BMW', '2026-03-01 12:41:28', '2022-03-01 02:41:32');
+-INSERT INTO product (product_name, category, image_url, price, stock, description, created_date, last_modified_date) VALUES ('mini', 'CAR', 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256261__480.jpg', 199990, 90, 'MINI COPPER', '2028-03-01 02:41:18', '2022-03-01 02:41:32');
+--- order
+-INSERT INTO orders (user_id, total_amount, created_date, last_modified_date) VALUES (6,100110,'2024-03-11 02:41:28', '2022-03-01 02:41:32');
+-INSERT INTO order_item (order_id, product_id, quantity, amount) VALUES(1,4,2,60);
+-INSERT INTO order_item (order_id, product_id, quantity, amount) VALUES(1,6,5,50);
+-INSERT INTO order_item (order_id, product_id, quantity, amount) VALUES(1,7,1,1000);
++-- users
++INSERT INTO users (user_id, email, password, created_date)
++VALUES (1, 'testuser@example.com', 'hashedpassword123', NOW());
+ 
++-- stocks
++INSERT INTO stocks (stock_id, symbol, name, market, industry, created_date)
++VALUES (1, '2330.TW', '台積電', 'TWSE', '半導體', NOW());
++
++-- watchlist
++INSERT INTO watchlist (watchlist_id, user_id, stock_id, created_date)
++VALUES (1, 1, 1, NOW());
++
++-- stock_prices
++INSERT INTO stock_prices (
++  stock_price_id, stock_id, trade_date, open_price, close_price, high_price, low_price, volume
++)
++VALUES (1, 1, CURDATE(), 600.00, 610.00, 615.00, 595.00, 12500000);
++
++-- news_articles
++INSERT INTO news_articles (
++  news_article_id, stock_id, title, content, source, url, published_at, created_date
++)
++VALUES (
++  1,
++  1,
++  '台積電宣布3奈米新進展',
++  '台積電今日宣布其3奈米製程進展順利，預計下季量產...',
++  '經濟日報',
++  'https://udn.com/news/article/3nm-tsmc',
++  NOW(),
++  NOW()
++);
++
++-- news_sentiments
++INSERT INTO news_sentiments (
++  news_sentiments_id, news_article_id, sentiment_score, summary, keywords, created_date
++)
++VALUES (
++  1,
++  1,
++  0.85,
++  '台積電3奈米技術進展快速，有望帶動股價成長',
++  '台積電,3奈米,量產',
++  NOW()
++);
++
++-- price_predictions
++INSERT INTO price_predictions (
++  price_predictions_id, stock_id, prediction_date, predicted_range_low, predicted_range_high, confidence, source_model, created_date
++)
++VALUES (
++  1,
++  1,
++  DATE_ADD(NOW(), INTERVAL 1 DAY),
++  605.00,
++  625.00,
++  0.88,
++  'DeepSeek-2025-v1',
++  NOW()
++);
+diff --git a/src/test/resources/schema.sql b/src/test/resources/schema.sql
+index 41aa3f0..ef69648 100644
+--- a/src/test/resources/schema.sql
++++ b/src/test/resources/schema.sql
+@@ -1,40 +1,73 @@
+-CREATE TABLE IF NOT EXISTS product
+-(
+-        product_id         INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+-        product_name       VARCHAR(128) NOT NULL,
+-        category           VARCHAR(32)  NOT NULL,
+-        image_url          VARCHAR(256) NOT NULL,
+-        price              INT          NOT NULL,
+-        stock              INT          NOT NULL,
+-        description        VARCHAR(1024),
+-        created_date       TIMESTAMP    NOT NULL,
+-        last_modified_date TIMESTAMP    NOT NULL
++-- users 儲存使用者基本資訊
++CREATE TABLE IF NOT EXISTS users (
++  user_id INT AUTO_INCREMENT PRIMARY KEY,
++  email VARCHAR(256) NOT NULL UNIQUE,
++  password VARCHAR(256) NOT NULL,
++  created_date TIMESTAMP NOT NULL
+ );
+-
+-CREATE TABLE IF NOT EXISTS users
+-(
+-        user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+-        email VARCHAR(256) NOT NULL UNIQUE,
+-        password VARCHAR(256) NOT NULL,
+-        created_date TIMESTAMP NOT NULL,
+-        last_modified_date TIMESTAMP NOT NULL
++-- stocks	股票基本資料
++CREATE TABLE IF NOT EXISTS stocks (
++  stock_id INT AUTO_INCREMENT PRIMARY KEY,
++  symbol VARCHAR(20) NOT NULL UNIQUE, -- e.g. "2330.TW"
++  name VARCHAR(100),
++  market VARCHAR(20), -- e.g. "TWSE", "NASDAQ"
++  industry VARCHAR(100),
++  created_date TIMESTAMP NOT NULL
+ );
+-
+--- Orders
+-CREATE TABLE orders
+-(
+-    order_id            INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+-    user_id             INT NOT NULL unique,
+-    total_amount INT NOT NULL, -- 訂單總費用
+-    created_date       TIMESTAMP    NOT NULL,
+-    last_modified_date TIMESTAMP    NOT NULL
++-- watchlist 使用者追蹤的股票清單
++CREATE TABLE IF NOT EXISTS watchlist (
++  watchlist_id INT AUTO_INCREMENT PRIMARY KEY,
++  user_id INT NOT NULL,
++  stock_id INT NOT NULL,
++  created_date TIMESTAMP NOT NULL,
++  FOREIGN KEY (user_id) REFERENCES users(user_id),
++  FOREIGN KEY (stock_id) REFERENCES stocks(stock_id)
+ );
+-
+-CREATE TABLE order_item
+-(
+-	order_item_id INT NOT NULL primary KEY AUTO_INCREMENT,
+-    order_id INT NOT NULL,
+-    product_id INT NOT NULL,
+-    quantity int not null, -- 商品數量
+-    amount int not null  -- 商品費用
+-)
++-- stock_prices	股票每日歷史價格
++CREATE TABLE IF NOT EXISTS stock_prices (
++  stock_price_id INT AUTO_INCREMENT PRIMARY KEY,
++  stock_id INT NOT NULL,
++  trade_date DATE NOT NULL,
++  open_price DECIMAL(10, 2),
++  close_price DECIMAL(10, 2),
++  high_price DECIMAL(10, 2),
++  low_price DECIMAL(10, 2),
++  volume BIGINT,
++  FOREIGN KEY (stock_id) REFERENCES stocks(stock_id),
++  UNIQUE (stock_id, trade_date)
++);
++-- news_articles	抓取的新聞文章
++CREATE TABLE IF NOT EXISTS news_articles (
++  news_article_id INT AUTO_INCREMENT PRIMARY KEY,
++  stock_id INT, -- 可選：關聯標的股票
++  title VARCHAR(255),
++  content TEXT,
++  source VARCHAR(100),
++  url TEXT,
++  published_at TIMESTAMP,
++  created_date TIMESTAMP NOT NULL,
++  FOREIGN KEY (stock_id) REFERENCES stocks(stock_id)
++);
++-- news_sentiments	DeepSeek 對新聞進行情緒分析與摘要後的資料
++CREATE TABLE IF NOT EXISTS news_sentiments (
++  news_sentiments_id INT AUTO_INCREMENT PRIMARY KEY,
++  news_article_id INT NOT NULL,
++  sentiment_score DECIMAL(5, 2),  -- 例：-1.00（極度利空）~ +1.00（極度利多）
++  summary TEXT,
++  keywords TEXT,
++  created_date TIMESTAMP NOT NULL,
++  FOREIGN KEY (news_article_id) REFERENCES news_articles(news_article_id)
++);
++-- price_predictions	根據新聞和股價產出的預測結果
++CREATE TABLE IF NOT EXISTS price_predictions (
++  price_predictions_id INT AUTO_INCREMENT PRIMARY KEY,
++  stock_id INT NOT NULL,
++  prediction_date TIMESTAMP NOT NULL,
++  predicted_range_low DECIMAL(10, 2),
++  predicted_range_high DECIMAL(10, 2),
++  confidence DECIMAL(5, 2), -- 置信度（如 0.85）
++  source_model VARCHAR(100), -- 例如 "DeepSeek-2025-v1"
++  created_date TIMESTAMP NOT NULL,
++  FOREIGN KEY (stock_id) REFERENCES stocks(stock_id),
++  UNIQUE (stock_id, prediction_date)
++);
+\ No newline at end of file
+-- 
+2.46.2
+
