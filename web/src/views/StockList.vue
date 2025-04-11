@@ -1,6 +1,6 @@
 <script setup>
 import {getCurrentInstance, onMounted, ref} from "vue";
-import DataGrid from "@/components/shared/dataGrid.vue";
+import DataGrid from "@/components/shared/DataGrid.vue";
 
 const {proxy: {$axios}} = getCurrentInstance()
 

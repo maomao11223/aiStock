@@ -3,7 +3,8 @@
 </script>
 
 <template>
-home
+<!-- 資訊 -->
+<!-- 圖表 -->
 </template>
 
 <style scoped>
