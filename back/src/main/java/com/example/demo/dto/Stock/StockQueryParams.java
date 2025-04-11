@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.Stock;
 
 import com.example.demo.dto.common.PageDto;
 import lombok.AllArgsConstructor;

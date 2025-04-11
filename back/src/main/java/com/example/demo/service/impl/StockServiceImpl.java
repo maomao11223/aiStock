@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.StockQueryParams;
+import com.example.demo.dto.Stock.StockQueryParams;
 import com.example.demo.entity.Stock;
 import com.example.demo.repository.StockPriceRepository;
 import com.example.demo.repository.StockRepository;
@@ -34,4 +34,12 @@ public class StockServiceImpl implements StockService {
         return stockRepository.findAll(spec, pageable);
     }
 
-}
+    @Override
+    public Stock getByStockId(Integer stockId) {
+
+        Stock stock = stockRepository.findByStockId(stockId);
+
+        return stock;
+    }
+
+  }

@@ -15,5 +15,6 @@ public interface StockPriceRepository extends JpaRepository<StockPrice, Integer>
 
     List<StockPrice> findByStock_StockIdOrderByTradeDateDesc(Long stockId);
 
+    List<StockPrice> findAllByStock_StockId(Integer stockId);
 
 }
